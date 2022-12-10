@@ -1,0 +1,306 @@
+openapi: 3.0.3
+info:
+  description: | 
+    Keep in touch with your friends by sharing photos of special moments, thanks to WASAPhoto! You can
+    upload your photos directly from your PC, and they will be visible to everyone following you.
+  title: WASAPhoto
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+
+paths:
+  /session:
+    post:
+      tags: ["login"]
+      summary: Logs in the user
+      description: |-
+        If the user does not exist, it will be created,
+        and an identifier is returned.
+        If the user exists, the user identifier is returned.
+      operationId: doLogin
+      requestBody:
+        description: User details
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Maria
+                  pattern: 'ˆ.*?$'
+                  minLength: 3
+                  maxLength: 16
+        required: true
+      responses:
+        '201':
+          description: User log-in action successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  identifier:
+                    # change here if you decide to use an integer
+                    #or any other type of identifier
+                    type: string
+                    example: abcdef012345
+  /users/{UserID}/:
+    parameters:
+      - $ref: "#/components/parameters/UserID"
+    get:
+      tags: ["User Interaction"]
+      operationId: getUserProfile
+      summary: "Get the specified user's profile"
+      responses:
+        '200':
+          description: "User profile"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        '400': { $ref: "#/components/responses/BadRequest" }
+        '404': { $ref: "#/components/responses/ResultNotFound" }
+        '500': { $ref: "#/components/responses/InternalServerError" } 
+  /users/{UserID}/name:
+    parameters:
+      - $ref: "#/components/parameters/UserID"
+    put:
+      tags: ["Profile Edit"]
+      operationId: setMyUserName
+      summary: "Edit the user's name"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserName"
+      responses:
+        '204': { description: "Username saved successfully." }
+        '400': { $ref: "#/components/responses/BadRequest" }
+        '404': { $ref: "#/components/responses/ResultNotFound" }
+        '500': { $ref: "#/components/responses/InternalServerError" }
+  /users/{UserID}/followed/{OtherUserID}:
+    parameters:
+      - $ref: "#/components/parameters/UserID"
+      - $ref: "#/components/parameters/OtherUserID"
+    put:
+      tags: ["User Interaction"]
+      operationId: followUser
+      summary: Follow another user
+      responses:
+        '204': { description: "User followed successfully." }
+        '400': { $ref: "#/components/responses/BadRequest" }
+        '404': { $ref: "#/components/responses/ResultNotFound" }
+        '409': { description: "The user is already followed, cannot proceed" }
+        '500': { $ref: "#/components/responses/InternalServerError" }
+    delete:
+      tags: ["User Interaction"]
+      operationId: unfollowUser
+      summary: Unfollow another user
+      responses:
+        '201': { description: "User unfollowed successfully." }
+        '400': { $ref: "#/components/responses/BadRequest" }
+        '404': { $ref: "#/components/responses/ResultNotFound" }
+        '500': { $ref: "#/components/responses/InternalServerError" }
+  /users/{UserID}/banned/{OtherUserID}:
+    parameters:
+      - $ref: "#/components/parameters/UserID"
+      - $ref: "#/components/parameters/OtherUserID"
+    put:
+      tags: ["User Interaction"]
+      operationId: banUser
+      summary: Ban another user
+      responses:
+        '204': { description: "User banned successfully." }
+        '400': { $ref: "#/components/responses/BadRequest" }
+        '404': { $ref: "#/components/responses/ResultNotFound" }
+        '409': { description: "The user is already banned, cannot proceed" }
+        '500': { $ref: "#/components/responses/InternalServerError" }
+    delete:
+      tags: ["User Interaction"]
+      operationId: unbanUser
+      summary: Unban another user
+      responses:
+        '201': { description: "User unbanned successfully" }
+        '400': { $ref: "#/components/responses/BadRequest" }
+        '404': { $ref: "#/components/responses/ResultNotFound" }
+        '500': { $ref: "#/components/responses/InternalServerError" }
+  /users/{UserID}/photo/{PhotoID}:
+    parameters:
+      - $ref: "#/components/parameters/UserID"
+      - $ref: "#/components/parameters/PhotoID"
+    put:
+      tags: ["Manage Photos"]
+      operationId: uploadPhoto
+      summary: Upload a photo owned by a user
+      requestBody:
+        content:
+          image/*:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '201': { description: "Image uploaded." }
+        '400': { $ref: "#/components/responses/BadRequest" }
+        '404': { $ref: "#/components/responses/ResultNotFound" }
+        '500': { $ref: "#/components/responses/InternalServerError" }
+    delete:
+      tags: ["Manage Photos"]
+      operationId: deletePhoto
+      summary: Upload a photo owned by a user
+      responses:
+        '201': { description: "Image deleted." }
+        '400': { $ref: "#/components/responses/BadRequest" }
+        '404': { $ref: "#/components/responses/ResultNotFound" }
+        '500': { $ref: "#/components/responses/InternalServerError" }
+  /users/{OtherID}/photos/{PhotoID}/likes/{UserID}:
+    parameters:
+      - $ref: "#/components/parameters/OtherUserID"
+      - $ref: "#/components/parameters/PhotoID"
+      - $ref: "#/components/parameters/UserID"
+    put:
+      tags: ["User Interaction"]
+      operationId: likePhoto
+      summary: Like a photo
+      responses:
+        '204': { description: "Liked the photo" }
+        '400': { $ref: "#/components/responses/BadRequest" }
+        '404': { $ref: "#/components/responses/ResultNotFound" }
+        '409': { description: "The photo already has a like" }
+        '500': { $ref: "#/components/responses/InternalServerError" }
+    delete:
+      tags: ["User Interaction"]
+      operationId: unlikePhoto
+      summary: Unlike a photo
+      responses:
+        '201': { description: "Unliked the photo" }
+        '400': { $ref: "#/components/responses/BadRequest" }
+        '404': { $ref: "#/components/responses/ResultNotFound" }
+        '500': { $ref: "#/components/responses/InternalServerError" }
+  /users/{OtherID}/photos/{PhotoID}/comments/{CommentID}:
+    parameters:
+      - $ref: "#/components/parameters/OtherUserID"
+      - $ref: "#/components/parameters/PhotoID"
+      - $ref: "#/components/parameters/CommentID"
+    put:
+      tags: ["User Interaction"]
+      operationId: commentPhoto
+      summary: Comment a photo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        '204': { description: "Commented the photo" }
+        '400': { $ref: "#/components/responses/BadRequest" }
+        '404': { $ref: "#/components/responses/ResultNotFound" }
+        '500': { $ref: "#/components/responses/InternalServerError" }
+    delete:
+      tags: ["User Interaction"]
+      operationId: uncommentPhoto
+      summary: Uncomment a photo
+      responses:
+        '201': { description: "Uncommented the photo" }
+        '400': { $ref: "#/components/responses/BadRequest" }
+        '404': { $ref: "#/components/responses/ResultNotFound" }
+        '500': { $ref: "#/components/responses/InternalServerError" }
+  /stream/:
+    get:
+      tags: ["Stream"]
+      operationId: getMyStream
+      summary: Get a user's stream
+      responses:
+        '200':
+          description: "User's stream"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Stream"
+        '400': { $ref: "#/components/responses/BadRequest" }
+        '404': { $ref: "#/components/responses/ResultNotFound" }
+        '500': { $ref: "#/components/responses/InternalServerError" } 
+components:
+  schemas:
+    UserProfile:
+      type: object
+      description: Contains the user photos, how many photos have been uploaded, the user's followers and following.
+      properties:
+        UserName:
+          $ref: '#/components/schemas/UserName'
+        Photos:
+          type: array
+          items:
+           $ref: "#/components/schemas/PhotoID"
+        UploadedPhotosQty:
+          type: integer
+          example: 111111
+        Followers:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserID"
+        Following:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserID"
+    Stream:
+      type: array
+      description: "Contains photos from the user's followings"
+      items:
+        $ref: "#/components/schemas/PhotoID"
+    UserName:
+      type: string
+      pattern: ^.*?$
+      minLength: 3
+      maxLength: 10
+      example: aabbcc
+    UserID:
+      type: integer
+      example: 1111111
+    PhotoID:
+      type: integer
+      example: 1111111
+  parameters:
+    UserID:
+      schema:
+        type: integer
+        example: 1111111
+        readOnly: true
+      name: UserID
+      in: path
+      required: true
+      description: Active User ID
+    OtherUserID:
+      schema:
+        type: integer
+        example: 1
+        readOnly: true
+      name: OtherUserID
+      in: path
+      required: true
+      description: Other User ID
+    PhotoID:
+      schema:
+        type: integer
+        example: 1
+        readOnly: true
+      name: PhotoID
+      in: path
+      required: true
+      description: Photo ID
+    CommentID:
+      schema:
+        type: integer
+        example: 1
+        readOnly: true
+      name: CommentID
+      in: path
+      required: true
+      description: Comment ID
+  responses:
+    ResultNotFound:
+      description: The requested result has not been found.
+    BadRequest:
+      description: The request was not compliant with the documentation (eg. missing fields, etc)
+    InternalServerError:
+      description: The server encountered an internal error. Further info in server logs
