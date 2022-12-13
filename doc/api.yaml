@@ -11,7 +11,7 @@ servers:
 paths:
   /session:
     post:
-      tags: ["login"]
+      tags: ["Login"]
       summary: Logs in the user
       description: |-
         If the user does not exist, it will be created,
@@ -41,17 +41,17 @@ paths:
                 type: object
                 properties:
                   identifier:
-                    # change here if you decide to use an integer
-                    #or any other type of identifier
-                    type: string
-                    example: abcdef012345
+                    type: integer
   /users/{UserID}/:
     parameters:
       - $ref: "#/components/parameters/UserID"
     get:
-      tags: ["User Interaction"]
+      tags: ["UserInteraction"]
       operationId: getUserProfile
       summary: "Get the specified user's profile"
+      description : |
+        Returns the user's profile, containing the user photos, followers,
+        followers, following and other informations.
       responses:
         '200':
           description: "User profile"
@@ -66,10 +66,13 @@ paths:
     parameters:
       - $ref: "#/components/parameters/UserID"
     put:
-      tags: ["Profile Edit"]
+      tags: ["ProfileEdit"]
       operationId: setMyUserName
       summary: "Edit the user's name"
+      description : |
+        Edit the user's username
       requestBody:
+        description : "The new username"
         content:
           application/json:
             schema:
@@ -84,9 +87,10 @@ paths:
       - $ref: "#/components/parameters/UserID"
       - $ref: "#/components/parameters/OtherUserID"
     put:
-      tags: ["User Interaction"]
+      tags: ["UserInteraction"]
       operationId: followUser
       summary: Follow another user
+      description : "Follow the user if it's not already followed, else do nothing"
       responses:
         '204': { description: "User followed successfully." }
         '400': { $ref: "#/components/responses/BadRequest" }
@@ -94,11 +98,12 @@ paths:
         '409': { description: "The user is already followed, cannot proceed" }
         '500': { $ref: "#/components/responses/InternalServerError" }
     delete:
-      tags: ["User Interaction"]
+      tags: ["UserInteraction"]
       operationId: unfollowUser
       summary: Unfollow another user
+      description : "Unfollow the user if it's followed, else do nothing"
       responses:
-        '201': { description: "User unfollowed successfully." }
+        '204': { description: "User unfollowed successfully." }
         '400': { $ref: "#/components/responses/BadRequest" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" }
@@ -107,9 +112,10 @@ paths:
       - $ref: "#/components/parameters/UserID"
       - $ref: "#/components/parameters/OtherUserID"
     put:
-      tags: ["User Interaction"]
+      tags: ["UserInteraction"]
       operationId: banUser
       summary: Ban another user
+      description : "Hide the user if it's not already hidden, else do nothing"
       responses:
         '204': { description: "User banned successfully." }
         '400': { $ref: "#/components/responses/BadRequest" }
@@ -117,11 +123,12 @@ paths:
         '409': { description: "The user is already banned, cannot proceed" }
         '500': { $ref: "#/components/responses/InternalServerError" }
     delete:
-      tags: ["User Interaction"]
+      tags: ["UserInteraction"]
       operationId: unbanUser
       summary: Unban another user
+      description : "Unhide the user if it's hidden, else do nothing"
       responses:
-        '201': { description: "User unbanned successfully" }
+        '204': { description: "User unbanned successfully" }
         '400': { $ref: "#/components/responses/BadRequest" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" }
@@ -130,38 +137,42 @@ paths:
       - $ref: "#/components/parameters/UserID"
       - $ref: "#/components/parameters/PhotoID"
     put:
-      tags: ["Manage Photos"]
+      tags: ["ManagePhotos"]
       operationId: uploadPhoto
-      summary: Upload a photo owned by a user
+      summary: Upload photo
+      description : "Upload a photo owned by the user"
       requestBody:
+        description : "The image to upload"
         content:
           image/*:
             schema:
               type: string
               format: binary
       responses:
-        '201': { description: "Image uploaded." }
+        '204': { description: "Image uploaded." }
         '400': { $ref: "#/components/responses/BadRequest" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" }
     delete:
-      tags: ["Manage Photos"]
+      tags: ["ManagePhotos"]
       operationId: deletePhoto
-      summary: Upload a photo owned by a user
+      summary: Delete photo
+      description : "Delete a photo owned by the user"
       responses:
-        '201': { description: "Image deleted." }
+        '204': { description: "Image deleted." }
         '400': { $ref: "#/components/responses/BadRequest" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" }
-  /users/{OtherID}/photos/{PhotoID}/likes/{UserID}:
+  /users/{OtherUserID}/photos/{PhotoID}/likes/{UserID}:
     parameters:
       - $ref: "#/components/parameters/OtherUserID"
       - $ref: "#/components/parameters/PhotoID"
       - $ref: "#/components/parameters/UserID"
     put:
-      tags: ["User Interaction"]
+      tags: ["UserInteraction"]
       operationId: likePhoto
       summary: Like a photo
+      description : "Like a photo published by another user if it's not already liked, else do nothing"
       responses:
         '204': { description: "Liked the photo" }
         '400': { $ref: "#/components/responses/BadRequest" }
@@ -169,23 +180,25 @@ paths:
         '409': { description: "The photo already has a like" }
         '500': { $ref: "#/components/responses/InternalServerError" }
     delete:
-      tags: ["User Interaction"]
+      tags: ["UserInteraction"]
       operationId: unlikePhoto
       summary: Unlike a photo
+      description : "Unlike a photo published by another user if it's already liked, else do nothing"
       responses:
-        '201': { description: "Unliked the photo" }
+        '204': { description: "Unliked the photo" }
         '400': { $ref: "#/components/responses/BadRequest" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" }
-  /users/{OtherID}/photos/{PhotoID}/comments/{CommentID}:
+  /users/{OtherUserID}/photos/{PhotoID}/comments/{CommentID}:
     parameters:
       - $ref: "#/components/parameters/OtherUserID"
       - $ref: "#/components/parameters/PhotoID"
       - $ref: "#/components/parameters/CommentID"
     put:
-      tags: ["User Interaction"]
+      tags: ["UserInteraction"]
       operationId: commentPhoto
       summary: Comment a photo
+      description : "Comment a photo"
       requestBody:
         content:
           application/json:
@@ -197,19 +210,21 @@ paths:
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" }
     delete:
-      tags: ["User Interaction"]
+      tags: ["UserInteraction"]
       operationId: uncommentPhoto
       summary: Uncomment a photo
+      description : "Delete a comment under a photo"
       responses:
-        '201': { description: "Uncommented the photo" }
+        '204': { description: "Uncommented the photo" }
         '400': { $ref: "#/components/responses/BadRequest" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" }
-  /stream/:
+  /stream:
     get:
       tags: ["Stream"]
       operationId: getMyStream
       summary: Get a user's stream
+      description : "Get the user's stream"
       responses:
         '200':
           description: "User's stream"
@@ -235,31 +250,35 @@ components:
         UploadedPhotosQty:
           type: integer
           example: 111111
+          description: "Amount of photos uploaded by the user"
         Followers:
+          description: "Array of the users following the requester"
           type: array
           items:
             $ref: "#/components/schemas/UserID"
         Following:
+          description: "Array of the users followed by the requestar"
           type: array
           items:
             $ref: "#/components/schemas/UserID"
     Stream:
       type: array
-      description: "Contains photos from the user's followings"
+      description: "Contains photos from the requester's followings"
       items:
         $ref: "#/components/schemas/PhotoID"
     UserName:
       type: string
-      pattern: ^.*?$
+      description: "The user's username"
+      pattern: '^.*?$'
       minLength: 3
-      maxLength: 10
-      example: aabbcc
+      maxLength: 16
     UserID:
       type: integer
+      description: "User's numerical ID"
       example: 1111111
     PhotoID:
       type: integer
-      example: 1111111
+      description: "Photo's numerical ID"
   parameters:
     UserID:
       schema:
@@ -304,3 +323,11 @@ components:
       description: The request was not compliant with the documentation (eg. missing fields, etc)
     InternalServerError:
       description: The server encountered an internal error. Further info in server logs
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
