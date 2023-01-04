@@ -57,12 +57,41 @@ func New(db *sql.DB) (AppDatabase, error) {
 
 	// Check if table exists. If not, the database is empty, and we need to create the structure
 	var tableName string
-	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='example_table';`).Scan(&tableName)
+	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='Users';`).Scan(&tableName)
 	if errors.Is(err, sql.ErrNoRows) {
-		sqlStmt := `CREATE TABLE example_table (id INTEGER NOT NULL PRIMARY KEY, name TEXT);`
-		_, err = db.Exec(sqlStmt)
-		if err != nil {
-			return nil, fmt.Errorf("error creating database structure: %w", err)
+		var sqlStatements []string
+		sqlStatements = append(sqlStatements, `CREATE TABLE Users (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			name TEXT NOT NULL
+			);`)
+		sqlStatements = append(sqlStatements, `CREATE TABLE Photos (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			ownerid INTEGER NOT NULL,
+			path TEXT NOT NULL,
+			timedate TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+			FOREIGN KEY(ownerid) REFERENCES Users(id)
+			);`)
+		sqlStatements = append(sqlStatements, `CREATE TABLE Comments (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			ownerid INTEGER NOT NULL,
+			photoid INTEGER NOT NULL,
+			timedate TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+			comment TEXT NOT NULL,
+			FOREIGN KEY (ownerid) REFERENCES Users(id),
+			FOREIGN KEY (photoid) REFERENCES Photos(id) ON DELETE CASCADE
+			);`)
+		sqlStatements = append(sqlStatements, `CREATE TABLE Follows (
+			followerid INTEGER NOT NULL,
+			followedid TEXT NOT NULL,
+			FOREIGN KEY (followerid) REFERENCES Users(id),
+			FOREIGN KEY (followedid) REFERENCES Users(id),
+			PRIMARY KEY(followerid, followedid)
+			);`)
+		for _, sqlStmt := range sqlStatements {
+			_, err = db.Exec(sqlStmt)
+			if err != nil {
+				return nil, fmt.Errorf("error creating database structure: %w", err)
+			}
 		}
 	}
 
