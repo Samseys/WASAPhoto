@@ -37,6 +37,7 @@ paths:
                   pattern: 'ˆ.*?$'
                   minLength: 3
                   maxLength: 16
+                  description: The username used for login
         required: true
       responses:
         '201':
@@ -48,6 +49,7 @@ paths:
                 properties:
                   identifier:
                     type: integer
+                    description: The user's id
         '400': { $ref: "#/components/responses/BadRequest" }
         '500': { $ref: "#/components/responses/InternalServerError" } 
           
@@ -255,7 +257,10 @@ components:
         UserName:
           $ref: '#/components/schemas/UserName'
         Photos:
+          description: "Array of the users's photos"
           type: array
+          minItems: 0
+          maxItems: 300
           items:
            $ref: "#/components/schemas/PhotoID"
         UploadedPhotosQty:
@@ -265,6 +270,8 @@ components:
         Followers:
           description: "Array of the users following the requester"
           type: array
+          minItems: 0
+          maxItems: 300
           items:
             $ref: "#/components/schemas/UserID"
         Following:
@@ -296,40 +303,44 @@ components:
   parameters:
     UserID:
       schema:
+        description: Active User ID
         type: integer
         example: 1111111
         readOnly: true
       name: UserID
       in: path
       required: true
-      description: Active User ID
+      description: Active User ID for parameter
     OtherUserID:
       schema:
+        description: Other User ID
         type: integer
         example: 1
         readOnly: true
       name: OtherUserID
       in: path
       required: true
-      description: Other User ID
+      description: Other User ID for parameter
     PhotoID:
       schema:
+        description: Photo ID
         type: integer
         example: 1
         readOnly: true
       name: PhotoID
       in: path
       required: true
-      description: Photo ID
+      description: Photo ID for parameter
     CommentID:
       schema:
+        description: Comment ID
         type: integer
         example: 1
         readOnly: true
       name: CommentID
       in: path
       required: true
-      description: Comment ID
+      description: Comment ID for parameter
   responses:
     ResultNotFound:
       description: The requested result has not been found.
