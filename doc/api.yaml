@@ -143,9 +143,8 @@ paths:
         '400': { $ref: "#/components/responses/BadRequest" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" }
-  /users/{UserID}/photo/{PhotoID}:
+  /photo/{PhotoID}:
     parameters:
-      - $ref: "#/components/parameters/UserID"
       - $ref: "#/components/parameters/PhotoID"
     put:
       tags: ["ManagePhotos"]
@@ -174,7 +173,7 @@ paths:
         '400': { $ref: "#/components/responses/BadRequest" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" }
-  /users/{OtherUserID}/photos/{PhotoID}/likes/{UserID}:
+  /photos/{PhotoID}/likes/{UserID}:
     parameters:
       - $ref: "#/components/parameters/OtherUserID"
       - $ref: "#/components/parameters/PhotoID"
@@ -200,7 +199,7 @@ paths:
         '400': { $ref: "#/components/responses/BadRequest" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" }
-  /users/{OtherUserID}/photos/{PhotoID}/comments/{CommentID}:
+  /photos/{PhotoID}/comments/{CommentID}:
     parameters:
       - $ref: "#/components/parameters/OtherUserID"
       - $ref: "#/components/parameters/PhotoID"
@@ -289,10 +288,10 @@ components:
     UserName:
       type: string
       description: "The user's username"
+      example: Samsey
       pattern: ^.*?$
       minLength: 3
       maxLength: 16
-      example: Samsey
     UserID:
       type: integer
       description: "User's numerical ID"
