@@ -38,8 +38,7 @@ import (
 
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
-	GetName() (string, error)
-	SetName(name string) error
+	Login(username string) (int, error)
 
 	Ping() error
 }
@@ -62,7 +61,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 		var sqlStatements []string
 		sqlStatements = append(sqlStatements, `CREATE TABLE Users (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			name TEXT NOT NULL
+			name TEXT NOT NULL UNIQUE
 			);`)
 		sqlStatements = append(sqlStatements, `CREATE TABLE Photos (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -4,8 +4,8 @@ package main
 
 import (
 	"fmt"
-	"me.samsey/wasa-photos/webui"
 	"io/fs"
+	"me.samsey/wasa-photos/webui"
 	"net/http"
 	"strings"
 )
