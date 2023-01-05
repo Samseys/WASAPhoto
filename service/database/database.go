@@ -34,11 +34,16 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"net/http"
+
+	"github.com/julienschmidt/httprouter"
 )
 
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
 	Login(username string) (int, error)
+	ChangeName(username string, identifier int) error
+	IdExistsAndEqual(r *http.Request, ps httprouter.Params) (bool, int)
 
 	Ping() error
 }
@@ -85,6 +90,13 @@ func New(db *sql.DB) (AppDatabase, error) {
 			FOREIGN KEY (followerid) REFERENCES Users(id),
 			FOREIGN KEY (followedid) REFERENCES Users(id),
 			PRIMARY KEY(followerid, followedid)
+			);`)
+		sqlStatements = append(sqlStatements, `CREATE TABLE Likes (
+			photoid INTEGER NOT NULL,
+			userid TEXT NOT NULL,
+			FOREIGN KEY (photoid) REFERENCES Photos(id),
+			FOREIGN KEY (userid) REFERENCES Photos(id),
+			PRIMARY KEY(photoid, userid)
 			);`)
 		for _, sqlStmt := range sqlStatements {
 			_, err = db.Exec(sqlStmt)

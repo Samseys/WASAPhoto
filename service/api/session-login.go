@@ -9,14 +9,6 @@ import (
 	"me.samsey/wasa-photos/service/api/reqcontext"
 )
 
-type Name struct {
-	Name string `json:"name"`
-}
-
-type Id struct {
-	Identifier int `json:"identifier"`
-}
-
 func (rt *_router) Session(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var name Name
 	err := json.NewDecoder(r.Body).Decode(&name)
