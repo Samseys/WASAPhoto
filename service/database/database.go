@@ -42,7 +42,9 @@ import (
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
 	Login(username string) (int, error)
+	IdExists(id int) bool
 	ChangeName(username string, identifier int) error
+	GetUserProfile(userid int) (UserProfile, error)
 	IdExistsAndEqual(r *http.Request, ps httprouter.Params) (bool, int)
 
 	Ping() error
@@ -109,6 +111,13 @@ func New(db *sql.DB) (AppDatabase, error) {
 	return &appdbimpl{
 		c: db,
 	}, nil
+}
+
+func (db *appdbimpl) IdExists(id int) bool {
+	var exists bool
+	db.c.QueryRow("SELECT EXISTS (SELECT 1 FROM Users WHERE id = ?)", id).Scan(&exists)
+
+	return exists
 }
 
 func (db *appdbimpl) Ping() error {

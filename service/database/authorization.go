@@ -14,7 +14,10 @@ func (db *appdbimpl) IdExistsAndEqual(r *http.Request, ps httprouter.Params) (bo
 		return false, -1
 	}
 
-	var id, _ = strconv.Atoi(splitted[1])
+	var id, err = strconv.Atoi(splitted[1])
+	if err != nil {
+		return false, -1
+	}
 	var exists bool
 	db.c.QueryRow("SELECT EXISTS (SELECT 1 FROM Users WHERE id = ?)", id).Scan(&exists)
 	useridFromPath, _ := strconv.Atoi(ps.ByName("UserID"))

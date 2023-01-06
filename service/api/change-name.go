@@ -7,6 +7,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"me.samsey/wasa-photos/service/api/reqcontext"
+	"me.samsey/wasa-photos/service/database"
 )
 
 func (rt *_router) ChangeName(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -16,7 +17,7 @@ func (rt *_router) ChangeName(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	var name Name
+	var name database.Name
 	err := json.NewDecoder(r.Body).Decode(&name)
 	if err != nil {
 		// The body was not a parseable JSON, reject it

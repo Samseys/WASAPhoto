@@ -7,10 +7,11 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"me.samsey/wasa-photos/service/api/reqcontext"
+	"me.samsey/wasa-photos/service/database"
 )
 
 func (rt *_router) Session(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	var name Name
+	var name database.Name
 	err := json.NewDecoder(r.Body).Decode(&name)
 	if err != nil {
 		// The body was not a parseable JSON, reject it
@@ -29,7 +30,7 @@ func (rt *_router) Session(w http.ResponseWriter, r *http.Request, ps httprouter
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	var response = Id{Identifier: identifier}
+	var response = database.UserId{Identifier: identifier}
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("content-type", "application/json")
 	_ = json.NewEncoder(w).Encode(response)

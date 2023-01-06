@@ -25,20 +25,14 @@ paths:
         If the user exists, the user identifier is returned.
       operationId: doLogin
       requestBody:
-        description: User details
         content:
           application/json:
             schema:
               description: JSON containing the username
               type: object
               properties:
-                name:
-                  type: string
-                  example: Maria
-                  pattern: '^.*?$'
-                  minLength: 3
-                  maxLength: 16
-                  description: The username used for login
+                Username:
+                  $ref: "#components/schemas/Username"
         required: true
       responses:
         '201':
@@ -49,15 +43,39 @@ paths:
                 description: JSON containing the user's id
                 type: object
                 properties:
-                  identifier:
-                    type: integer
-                    description: The user's id
+                  UserID:
+                    $ref: "#components/schemas/UserId"
         '400': { $ref: "#/components/responses/BadRequest" }
         '500': { $ref: "#/components/responses/InternalServerError" }
+  /users/search:
+    parameters:
+      - $ref: "#/components/parameters/Username"
+    get:
+      security: []
+        tags: ["UserInteraction"]
+        operationId: searchUserFromName
+        summary: "Get the specified user's id"
+        ##################################################
+
+
+
+
+
+        #DA IMPLEMENTARE
+
+
+
+
+
+
+
+
+        ##########################################
   /users/{UserID}/:
     parameters:
       - $ref: "#/components/parameters/UserID"
     get:
+      security: []
       tags: ["UserInteraction"]
       operationId: getUserProfile
       summary: "Get the specified user's profile"
@@ -73,7 +91,7 @@ paths:
                 $ref: "#/components/schemas/UserProfile"
         '400': { $ref: "#/components/responses/BadRequest" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
-        '500': { $ref: "#/components/responses/InternalServerError" } 
+        '500': { $ref: "#/components/responses/InternalServerError" }
   /users/{UserID}/name:
     parameters:
       - $ref: "#/components/parameters/UserID"
@@ -84,11 +102,10 @@ paths:
       description : |
         Edit the user's username
       requestBody:
-        description : "The new username"
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserNameRequest"
+              $ref: "#/components/schemas/UsernameRequest"
       responses:
         '204': { description: "Username saved successfully." }
         '400': { $ref: "#/components/responses/BadRequest" }
@@ -152,11 +169,10 @@ paths:
       summary: Upload photo
       description : "Upload a photo owned by the user"
       requestBody:
-        description : "The image to upload"
         content:
           image/*:
             schema:
-              description: The photo
+              description: The image to upload
               type: string
               format: binary
               pattern: '[\S\s]*'
@@ -259,8 +275,10 @@ components:
       type: object
       description: Contains the user photos, how many photos have been uploaded, the user's followers and following.
       properties:
-        UserName:
-          $ref: '#/components/schemas/UserName'
+        UserID:
+          $ref: '#/components/schemas/UserID'
+        Username:
+          $ref: '#/components/schemas/Username'
         Photos:
           description: "Array of the users's photos"
           type: array
@@ -268,24 +286,28 @@ components:
           maxItems: 10000
           items:
            $ref: "#/components/schemas/PhotoID"
-        UploadedPhotosQty:
-          type: integer
-          example: 111
-          description: "Amount of photos uploaded by the user"
         Followers:
           description: "Array of the users following the requester"
           type: array
           minItems: 0
           maxItems: 10000
           items:
-            $ref: "#/components/schemas/UserID"
+            $ref: "#/components/schemas/UserProfileSimplified"
         Following:
-          description: "Array of the users followed by the requestar"
+          description: "Array of the users followed by the requester"
           type: array
           minItems: 0
           maxItems: 10000
           items:
-            $ref: "#/components/schemas/UserID"
+            $ref: "#/components/schemas/UserProfileSimplified"
+    UserProfileSimplified:
+      description: "User profile containing the username with the ID"
+      type: object
+      properties:
+        UserID:
+          $ref: '#/components/schemas/UserID'
+        Username:
+          $ref: '#/components/schemas/Username'
     Stream:
       description: "JSON Containing the stream"
       type: object
@@ -306,13 +328,13 @@ components:
           minLength: 1
           maxLength: 60000
           description: The comment
-    UserNameRequest:
+    UsernameRequest:
       type: object
       description: "JSON containing the username"
       properties:
-        UserName:
+        Username:
           $ref: "#/components/schemas/UserName"
-    UserName:
+    Username:
       type: string
       description: "The user's username"
       example: Samsey
@@ -327,6 +349,18 @@ components:
       type: integer
       description: "Photo's numerical ID"
   parameters:
+    Username:
+      schema:
+        description: Username
+        type: string
+        example: Samsey
+        pattern: '^.*?$'
+        minLength: 3
+        maxLength: 16
+      name: UserID
+      in: query
+      required: true
+      description: Username for search in query
     UserID:
       schema:
         description: Active User ID
