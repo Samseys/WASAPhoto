@@ -11,7 +11,7 @@ import (
 )
 
 func (rt *_router) FollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	existsAndEqual, id := rt.db.IdExistsAndEqual(r, ps)
+	existsAndEqual, id := rt.db.IdExistsAndCompare(r, ps)
 	if !existsAndEqual {
 		w.WriteHeader(http.StatusUnauthorized)
 		return

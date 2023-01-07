@@ -165,23 +165,40 @@ paths:
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" }
   /photos:
-    put:
+    post:
       tags: ["ManagePhotos"]
       operationId: uploadPhoto
       summary: Upload photo
       description : "Upload a photo owned by the user"
       requestBody:
         content:
-          image/*:
+          multipart/form-data:
             schema:
+              type: object
               description: The image to upload
-              type: string
-              format: binary
-              pattern: '[\S\s]*'
-              minLength: 0
-              maxLength: 1000000000
+              properties:
+                mainComment:
+                  type: string
+                  minLength: 1
+                  maxLength: 60000
+                  description: The comment
+                uploadedImage:
+                  type: string
+                  format: binary
+            encoding:
+              uploadedImage:
+                contentType: image/png, image/jpeg, image/jpg
       responses:
-        '204': { description: "Image uploaded." }
+        '201':
+          description: Photo uploaded successfully
+          content:
+            application/json:
+              schema:
+                description: JSON containing the photo's id
+                type: object
+                properties:
+                  PhotoID:
+                    $ref: "#/components/schemas/PhotoID"
         '400': { $ref: "#/components/responses/BadRequest" }
         '401': { $ref: "#/components/responses/Unauthorized"}
         '404': { $ref: "#/components/responses/ResultNotFound" }

@@ -41,12 +41,13 @@ import (
 
 var ErrUserProfileNotFound = errors.New("user doesn't exist")
 var ErrUsernameAlradyTaken = errors.New("another user already has this username")
+var ImagePath = "/home/wasa/Desktop/images/"
 
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
 	Login(username string) (int, error)
 	IdExists(id int) bool
-	IdExistsAndEqual(r *http.Request, ps httprouter.Params) (bool, int)
+	IdExistsAndCompare(r *http.Request, ps httprouter.Params) (bool, int)
 	IsBanned(r *http.Request, otherUserID int) bool
 	ChangeName(username string, id int) error
 	GetUserProfile(userid int) (UserProfile, error)
@@ -54,6 +55,7 @@ type AppDatabase interface {
 	Unfollow(followerID int, followedID int) error
 	Ban(userID int, bannedID int) error
 	Unban(followerID int, followedID int) error
+	UploadImage(userID int, mainComment string, extension string) (int, error)
 	Ping() error
 }
 
@@ -80,15 +82,16 @@ func New(db *sql.DB) (AppDatabase, error) {
 		sqlStatements = append(sqlStatements, `CREATE TABLE Photos (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			ownerid INTEGER NOT NULL,
-			path TEXT NOT NULL,
-			timedate TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+			maincomment TEXT NOT NULL,
+			extension TEXT NOT NULL,
+			creationdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
 			FOREIGN KEY(ownerid) REFERENCES Users(id)
 			);`)
 		sqlStatements = append(sqlStatements, `CREATE TABLE Comments (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			ownerid INTEGER NOT NULL,
 			photoid INTEGER NOT NULL,
-			timedate TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+			creationdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
 			comment TEXT NOT NULL,
 			FOREIGN KEY (ownerid) REFERENCES Users(id),
 			FOREIGN KEY (photoid) REFERENCES Photos(id) ON DELETE CASCADE
