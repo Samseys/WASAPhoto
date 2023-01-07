@@ -39,14 +39,17 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+var ErrUserProfileNotFound = errors.New("user doesn't exist")
+var ErrUsernameAlradyTaken = errors.New("another user already has this username")
+
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
 	Login(username string) (int, error)
 	IdExists(id int) bool
+	IdExistsAndEqual(r *http.Request, ps httprouter.Params) (bool, int)
 	ChangeName(username string, identifier int) error
 	GetUserProfile(userid int) (UserProfile, error)
-	IdExistsAndEqual(r *http.Request, ps httprouter.Params) (bool, int)
-
+	Follow(followeridentifier int, followedidentifier int) error
 	Ping() error
 }
 

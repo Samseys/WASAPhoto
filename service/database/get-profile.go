@@ -10,7 +10,7 @@ func (db *appdbimpl) GetUserProfile(userid int) (UserProfile, error) {
 	var userProfile UserProfile
 	err := db.c.QueryRow("SELECT name FROM Users WHERE id = ?", userid).Scan(&userProfile.Username)
 	if errors.Is(err, sql.ErrNoRows) {
-		return userProfile, err
+		return userProfile, ErrUserProfileNotFound
 	}
 
 	rows, err := db.c.Query("SELECT Users.name, Follows.followerid FROM Follows INNER JOIN Users ON Users.id = Follows.followerid WHERE followedid = ?", userid)
@@ -28,6 +28,8 @@ func (db *appdbimpl) GetUserProfile(userid int) (UserProfile, error) {
 		followers = append(followers, profile)
 	}
 
+	rows.Close()
+
 	userProfile.Followers = followers
 
 	rows, err = db.c.Query("SELECT Users.name, Follows.followedid FROM Follows INNER JOIN Users ON Users.id = Follows.followedid WHERE followerid = ?", userid)
@@ -43,8 +45,9 @@ func (db *appdbimpl) GetUserProfile(userid int) (UserProfile, error) {
 			return userProfile, err
 		}
 		following = append(following, profile)
-
 	}
+
+	rows.Close()
 
 	userProfile.Following = following
 	fmt.Printf("userProfile.Following: %v\n", following)
@@ -63,6 +66,8 @@ func (db *appdbimpl) GetUserProfile(userid int) (UserProfile, error) {
 		}
 		photos = append(photos, photoid)
 	}
+
+	rows.Close()
 
 	userProfile.Photos = photos
 	return userProfile, nil

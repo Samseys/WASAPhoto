@@ -10,6 +10,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.POST("/session", rt.wrap(rt.Session))
 	rt.router.GET("/users/:UserID", rt.wrap(rt.GetUserProfile))
 	rt.router.PUT("/users/:UserID/name", rt.wrap(rt.ChangeName))
+	rt.router.PUT("/users/:UserID/followed/:OtherUserID", rt.wrap(rt.FollowUser))
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)
 

@@ -3,42 +3,41 @@ package api
 import (
 	"errors"
 	"net/http"
-
-	"encoding/json"
+	"strconv"
 
 	"github.com/julienschmidt/httprouter"
 	"me.samsey/wasa-photos/service/api/reqcontext"
 	"me.samsey/wasa-photos/service/database"
 )
 
-func (rt *_router) ChangeName(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) FollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	existsAndEqual, id := rt.db.IdExistsAndEqual(r, ps)
 	if !existsAndEqual {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
-	var name database.Name
-	err := json.NewDecoder(r.Body).Decode(&name)
+	otherUserID, err := strconv.Atoi(ps.ByName("OtherUserID"))
 	if err != nil {
-		// The body was not a parseable JSON, reject it
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	if name.Name == "" {
-		w.WriteHeader(http.StatusBadRequest)
+	exists := rt.db.IdExists(otherUserID)
+
+	if !exists {
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	err = rt.db.ChangeName(name.Name, id)
+	err = rt.db.Follow(id, otherUserID)
 
 	if err != nil {
-		if errors.Is(err, database.ErrUsernameAlradyTaken) {
+		if errors.Is(err, database.ErrAlreadyFollowed) {
 			w.WriteHeader(http.StatusConflict)
 			return
 		} else {
-			ctx.Logger.WithError(err).Error("can't process the change name request")
+			ctx.Logger.WithError(err).Error("can't process the follow request")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

@@ -20,9 +20,9 @@ func (db *appdbimpl) IdExistsAndEqual(r *http.Request, ps httprouter.Params) (bo
 	}
 	var exists bool
 	db.c.QueryRow("SELECT EXISTS (SELECT 1 FROM Users WHERE id = ?)", id).Scan(&exists)
-	useridFromPath, _ := strconv.Atoi(ps.ByName("UserID"))
+	useridFromPath, err := strconv.Atoi(ps.ByName("UserID"))
 
-	if exists && id == useridFromPath {
+	if err == nil && exists && id == useridFromPath {
 		return true, id
 	} else {
 		return false, -1

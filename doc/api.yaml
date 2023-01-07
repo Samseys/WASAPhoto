@@ -32,7 +32,7 @@ paths:
               type: object
               properties:
                 Username:
-                  $ref: "#components/schemas/Username"
+                  $ref: "#/components/schemas/Username"
         required: true
       responses:
         '201':
@@ -44,7 +44,7 @@ paths:
                 type: object
                 properties:
                   UserID:
-                    $ref: "#components/schemas/UserId"
+                    $ref: "#/components/schemas/UserID"
         '400': { $ref: "#/components/responses/BadRequest" }
         '500': { $ref: "#/components/responses/InternalServerError" }
   /users/search:
@@ -52,25 +52,21 @@ paths:
       - $ref: "#/components/parameters/Username"
     get:
       security: []
-        tags: ["UserInteraction"]
-        operationId: searchUserFromName
-        summary: "Get the specified user's id"
-        ##################################################
-
-
-
-
-
-        #DA IMPLEMENTARE
-
-
-
-
-
-
-
-
-        ##########################################
+      tags: ["UserInteraction"]
+      operationId: searchUserFromName
+      summary: "Get the specified user's id"
+      description : |
+        Searchs in the database for a user with the specified name
+      responses:
+        '200':
+          description: "User ID"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserID"
+        '400': { $ref: "#/components/responses/BadRequest" }
+        '404': { $ref: "#/components/responses/ResultNotFound" }
+        '500': { $ref: "#/components/responses/InternalServerError" }
   /users/{UserID}/:
     parameters:
       - $ref: "#/components/parameters/UserID"
@@ -333,7 +329,7 @@ components:
       description: "JSON containing the username"
       properties:
         Username:
-          $ref: "#/components/schemas/UserName"
+          $ref: "#/components/schemas/Username"
     Username:
       type: string
       description: "The user's username"

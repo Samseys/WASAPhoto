@@ -1,11 +1,16 @@
 package database
 
-import "errors"
+import "strings"
 
 func (db *appdbimpl) ChangeName(username string, identifier int) error {
-	sqlres, _ := db.c.Exec("UPDATE Users SET name = ? WHERE id = ?", username, identifier)
-	if sqlres == nil {
-		return errors.New("another user already has this username")
+	_, err := db.c.Exec("UPDATE Users SET name = ? WHERE id = ?", username, identifier)
+
+	if err != nil {
+		if strings.Contains(err.Error(), "UNIQUE") {
+			return ErrUsernameAlradyTaken
+		} else {
+			return err
+		}
 	}
 
 	return nil

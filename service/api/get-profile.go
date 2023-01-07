@@ -1,15 +1,14 @@
 package api
 
 import (
-	"database/sql"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/julienschmidt/httprouter"
 	"me.samsey/wasa-photos/service/api/reqcontext"
+	"me.samsey/wasa-photos/service/database"
 )
 
 func (rt *_router) GetUserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -22,11 +21,11 @@ func (rt *_router) GetUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	profile, err := rt.db.GetUserProfile(userid)
 
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, database.ErrUserProfileNotFound) {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		} else {
-			fmt.Printf("err: %v\n", err)
+			ctx.Logger.WithError(err).Error("can't process the get profile request")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
