@@ -20,7 +20,7 @@ func (db *appdbimpl) GetUserProfile(userid int) (UserProfile, error) {
 	followers := []UserProfileSimplified{}
 	for rows.Next() {
 		var profile UserProfileSimplified
-		rows.Scan(&profile.Username, &profile.Identifier)
+		rows.Scan(&profile.Username, &profile.ID)
 		if err != nil {
 			return userProfile, err
 		}
@@ -39,7 +39,7 @@ func (db *appdbimpl) GetUserProfile(userid int) (UserProfile, error) {
 	following := []UserProfileSimplified{}
 	for rows.Next() {
 		var profile UserProfileSimplified
-		err = rows.Scan(&profile.Username, &profile.Identifier)
+		err = rows.Scan(&profile.Username, &profile.ID)
 		if err != nil {
 			return userProfile, err
 		}

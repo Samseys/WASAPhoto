@@ -47,9 +47,13 @@ type AppDatabase interface {
 	Login(username string) (int, error)
 	IdExists(id int) bool
 	IdExistsAndEqual(r *http.Request, ps httprouter.Params) (bool, int)
-	ChangeName(username string, identifier int) error
+	IsBanned(r *http.Request, otherUserID int) bool
+	ChangeName(username string, id int) error
 	GetUserProfile(userid int) (UserProfile, error)
-	Follow(followeridentifier int, followedidentifier int) error
+	Follow(followerID int, followedID int) error
+	Unfollow(followerID int, followedID int) error
+	Ban(userID int, bannedID int) error
+	Unban(followerID int, followedID int) error
 	Ping() error
 }
 
@@ -95,6 +99,13 @@ func New(db *sql.DB) (AppDatabase, error) {
 			FOREIGN KEY (followerid) REFERENCES Users(id),
 			FOREIGN KEY (followedid) REFERENCES Users(id),
 			PRIMARY KEY(followerid, followedid)
+			);`)
+		sqlStatements = append(sqlStatements, `CREATE TABLE Bans (
+			userid INTEGER NOT NULL,
+			bannedid TEXT NOT NULL,
+			FOREIGN KEY (userid) REFERENCES Users(id),
+			FOREIGN KEY (bannedid) REFERENCES Users(id),
+			PRIMARY KEY(userid, bannedid)
 			);`)
 		sqlStatements = append(sqlStatements, `CREATE TABLE Likes (
 			photoid INTEGER NOT NULL,

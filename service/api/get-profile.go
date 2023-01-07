@@ -19,6 +19,11 @@ func (rt *_router) GetUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
+	isBanned := rt.db.IsBanned(r, userid)
+	if isBanned {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 	profile, err := rt.db.GetUserProfile(userid)
 
 	if err != nil {

@@ -11,6 +11,9 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/users/:UserID", rt.wrap(rt.GetUserProfile))
 	rt.router.PUT("/users/:UserID/name", rt.wrap(rt.ChangeName))
 	rt.router.PUT("/users/:UserID/followed/:OtherUserID", rt.wrap(rt.FollowUser))
+	rt.router.DELETE("/users/:UserID/followed/:OtherUserID", rt.wrap(rt.UnfollowUser))
+	rt.router.PUT("/users/:UserID/banned/:OtherUserID", rt.wrap(rt.BanUser))
+	rt.router.DELETE("/users/:UserID/banned/:OtherUserID", rt.wrap(rt.UnbanUser))
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)
 
