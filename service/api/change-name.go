@@ -20,13 +20,15 @@ func (rt *_router) ChangeName(w http.ResponseWriter, r *http.Request, ps httprou
 
 	var name database.Name
 	err := json.NewDecoder(r.Body).Decode(&name)
+	defer r.Body.Close()
 	if err != nil {
-		// The body was not a parseable JSON, reject it
+		ctx.Logger.WithError(err).Error("change name: error decoding JSON")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	if name.Name == "" {
+		ctx.Logger.Error("change name: error validating JSON")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

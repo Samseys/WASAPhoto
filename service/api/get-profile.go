@@ -14,6 +14,7 @@ import (
 func (rt *_router) GetUserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	userid, err := strconv.Atoi(ps.ByName("UserID"))
 	if err != nil {
+		ctx.Logger.Error("get user profile: parameter not valid")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

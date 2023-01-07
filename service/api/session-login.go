@@ -13,8 +13,9 @@ import (
 func (rt *_router) Session(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var name database.Name
 	err := json.NewDecoder(r.Body).Decode(&name)
+	defer r.Body.Close()
 	if err != nil {
-		// The body was not a parseable JSON, reject it
+		ctx.Logger.WithError(err).Error("session: error decoding user")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -26,7 +27,7 @@ func (rt *_router) Session(w http.ResponseWriter, r *http.Request, ps httprouter
 
 	identifier, err := rt.db.Login(name.Name)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("Error logging user")
+		ctx.Logger.WithError(err).Error("session: error logging user")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

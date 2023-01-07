@@ -3,7 +3,6 @@ package database
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 )
 
 func (db *appdbimpl) GetUserProfile(userid int) (UserProfile, error) {
@@ -50,7 +49,6 @@ func (db *appdbimpl) GetUserProfile(userid int) (UserProfile, error) {
 	rows.Close()
 
 	userProfile.Following = following
-	fmt.Printf("userProfile.Following: %v\n", following)
 
 	rows, err = db.c.Query("SELECT id FROM Photos WHERE ownerid = ? ORDER BY timedate DESC", userid)
 	if err != nil {

@@ -19,6 +19,7 @@ func (rt *_router) FollowUser(w http.ResponseWriter, r *http.Request, ps httprou
 
 	otherUserID, err := strconv.Atoi(ps.ByName("OtherUserID"))
 	if err != nil {
+		ctx.Logger.Error("follow: parameter not valid")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
