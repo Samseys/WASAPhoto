@@ -192,6 +192,8 @@ paths:
                   format: binary
                   description: The photo to upload
                   pattern: '[\s\S]+'
+                  minLength: 1
+                  maxLength: 18446744073709551615
             encoding:
               UploadedImage:
                 contentType: image/png, image/jpeg, image/jpg
