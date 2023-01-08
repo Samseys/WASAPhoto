@@ -67,7 +67,7 @@ paths:
         '400': { $ref: "#/components/responses/BadRequest" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" }
-  /users/{UserID}:
+  /users/{UserID}/profile:
     parameters:
       - $ref: "#/components/parameters/UserID"
     get:
@@ -179,21 +179,21 @@ paths:
           multipart/form-data:
             schema:
               type: object
-              description: Form containing the image and a comment to post
+              description: Form containing the photo and a comment to post
               properties:
-                mainComment:
+                MainComment:
                   type: string
                   minLength: 1
                   maxLength: 60000
                   description: The comment
                   pattern: '[\s\S]+'
-                uploadedImage:
+                UploadedPhoto:
                   type: string
                   format: binary
-                  description: The image to upload
+                  description: The photo to upload
                   pattern: '[\s\S]+'
             encoding:
-              uploadedImage:
+              UploadedImage:
                 contentType: image/png, image/jpeg, image/jpg
       responses:
         '201':
@@ -219,7 +219,7 @@ paths:
       summary: Delete photo
       description : "Delete a photo owned by the user"
       responses:
-        '204': { description: "Image deleted." }
+        '204': { description: "Photo deleted." }
         '400': { $ref: "#/components/responses/BadRequest" }
         '401': { $ref: "#/components/responses/Unauthorized"}
         '404': { $ref: "#/components/responses/ResultNotFound" }

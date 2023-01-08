@@ -29,7 +29,7 @@ func (rt *_router) ChangeName(w http.ResponseWriter, r *http.Request, ps httprou
 	}
 
 	if name.Name == "" {
-		ctx.Logger.Error("change name: error validating JSON")
+		ctx.Logger.WithError(err).Error("change name: error validating JSON")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -43,7 +43,7 @@ func (rt *_router) ChangeName(w http.ResponseWriter, r *http.Request, ps httprou
 			w.WriteHeader(http.StatusConflict)
 			return
 		} else {
-			ctx.Logger.WithError(err).Error("can't process the change name request")
+			ctx.Logger.WithError(err).Error("change-name: error while inserting the name change in the database")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

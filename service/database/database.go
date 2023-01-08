@@ -41,7 +41,7 @@ import (
 
 var ErrUserProfileNotFound = errors.New("user doesn't exist")
 var ErrUsernameAlradyTaken = errors.New("another user already has this username")
-var ImagePath = "/home/wasa/Desktop/images/"
+var PhotoPath = "/home/wasa/Desktop/images/"
 
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
@@ -56,7 +56,10 @@ type AppDatabase interface {
 	Unfollow(followerID uint64, followedID uint64) error
 	Ban(userID uint64, bannedID uint64) error
 	Unban(followerID uint64, followedID uint64) error
-	UploadImage(userID uint64, mainComment string, extension string) (uint64, error)
+	UploadPhoto(userID uint64, mainComment string, extension string) (uint64, error)
+	PhotoExists(photoID uint64) (bool, error)
+	GetPhotoOwner(photoID uint64) (uint64, error)
+	LikePhoto(userID uint64, photoID uint64) error
 	Ping() error
 }
 

@@ -19,7 +19,7 @@ func (rt *_router) UnfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 
 	otherUserID, err := strconv.ParseUint(ps.ByName("OtherUserID"), 10, 64)
 	if err != nil {
-		ctx.Logger.Error("unfollow: parameter not valid")
+		ctx.Logger.WithError(err).Error("unfollow: parameter not valid")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -27,7 +27,7 @@ func (rt *_router) UnfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 	exists, err := rt.db.IdExists(otherUserID)
 
 	if err != nil {
-		ctx.Logger.Error("can't process the unfollow request")
+		ctx.Logger.WithError(err).Error("unfollow: error while checking if the user exists")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -44,7 +44,7 @@ func (rt *_router) UnfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 			w.WriteHeader(http.StatusConflict)
 			return
 		} else {
-			ctx.Logger.WithError(err).Error("can't process the unfollow request")
+			ctx.Logger.WithError(err).Error("unfollow: error while removing the follow from the database")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

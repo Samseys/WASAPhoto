@@ -19,7 +19,7 @@ func (rt *_router) FollowUser(w http.ResponseWriter, r *http.Request, ps httprou
 
 	otherUserID, err := strconv.ParseUint(ps.ByName("OtherUserID"), 10, 64)
 	if err != nil {
-		ctx.Logger.Error("follow: parameter not valid")
+		ctx.Logger.WithError(err).Error("follow: parameter not valid")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -27,7 +27,7 @@ func (rt *_router) FollowUser(w http.ResponseWriter, r *http.Request, ps httprou
 	exists, err := rt.db.IdExists(otherUserID)
 
 	if err != nil {
-		ctx.Logger.Error("can't process the follow request")
+		ctx.Logger.WithError(err).Error("follow: error while checking if the user exists")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -44,7 +44,7 @@ func (rt *_router) FollowUser(w http.ResponseWriter, r *http.Request, ps httprou
 			w.WriteHeader(http.StatusConflict)
 			return
 		} else {
-			ctx.Logger.WithError(err).Error("can't process the follow request")
+			ctx.Logger.WithError(err).Error("follow: error while inserting the follow")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

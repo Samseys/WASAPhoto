@@ -19,7 +19,7 @@ func (rt *_router) UnbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 
 	otherUserID, err := strconv.ParseUint(ps.ByName("OtherUserID"), 10, 64)
 	if err != nil {
-		ctx.Logger.Error("parameter not valid")
+		ctx.Logger.WithError(err).Error("unban: parameter not valid")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -27,7 +27,7 @@ func (rt *_router) UnbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 	exists, err := rt.db.IdExists(otherUserID)
 
 	if err != nil {
-		ctx.Logger.Error("can't process the unban request")
+		ctx.Logger.WithError(err).Error("unban: error while checking if the user exists")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -44,7 +44,7 @@ func (rt *_router) UnbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 			w.WriteHeader(http.StatusConflict)
 			return
 		} else {
-			ctx.Logger.WithError(err).Error("can't process the unban request")
+			ctx.Logger.WithError(err).Error("unban: error while removing the ban from the database")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
