@@ -8,12 +8,37 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"me.samsey/wasa-photos/service/api/reqcontext"
 	"me.samsey/wasa-photos/service/database"
+	"me.samsey/wasa-photos/service/utils"
 )
 
 func (rt *_router) UnbanUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	existsAndEqual, id := rt.db.IdExistsAndCompare(r, ps)
-	if !existsAndEqual {
+	authID := utils.GetAuthorizationID(r.Header.Get("Authorization"))
+	if authID == 0 {
 		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	exists, err := rt.db.IdExists(authID)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("unban: error while checking if the user exists")
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	if !exists {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	userID, err := strconv.ParseUint(ps.ByName("UserID"), 10, 64)
+
+	if err != nil {
+		ctx.Logger.WithError(err).Error("unban: parameter not valid")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if authID != userID {
+		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 
@@ -24,7 +49,12 @@ func (rt *_router) UnbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	exists, err := rt.db.IdExists(otherUserID)
+	if userID == otherUserID {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	exists, err = rt.db.IdExists(otherUserID)
 
 	if err != nil {
 		ctx.Logger.WithError(err).Error("unban: error while checking if the user exists")
@@ -37,11 +67,11 @@ func (rt *_router) UnbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	err = rt.db.Unban(id, otherUserID)
+	err = rt.db.UnbanUser(userID, otherUserID)
 
 	if err != nil {
 		if errors.Is(err, database.ErrNotFollowed) {
-			w.WriteHeader(http.StatusConflict)
+			w.WriteHeader(http.StatusNotFound)
 			return
 		} else {
 			ctx.Logger.WithError(err).Error("unban: error while removing the ban from the database")

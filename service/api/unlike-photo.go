@@ -11,7 +11,7 @@ import (
 	"me.samsey/wasa-photos/service/utils"
 )
 
-func (rt *_router) UnfollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) UnlikePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	authID := utils.GetAuthorizationID(r.Header.Get("Authorization"))
 	if authID == 0 {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -20,7 +20,7 @@ func (rt *_router) UnfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 
 	exists, err := rt.db.IdExists(authID)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("unfollow: error while checking if the user exists")
+		ctx.Logger.WithError(err).Error("follow: error while checking if the user exists")
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
@@ -32,7 +32,7 @@ func (rt *_router) UnfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 	userID, err := strconv.ParseUint(ps.ByName("UserID"), 10, 64)
 
 	if err != nil {
-		ctx.Logger.WithError(err).Error("unfollow: parameter not valid")
+		ctx.Logger.WithError(err).Error("follow: parameter not valid")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -42,22 +42,17 @@ func (rt *_router) UnfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	otherUserID, err := strconv.ParseUint(ps.ByName("OtherUserID"), 10, 64)
+	photoID, err := strconv.ParseUint(ps.ByName("PhotoID"), 10, 64)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("unfollow: parameter not valid")
+		ctx.Logger.Error("unlike-photo: parameter not valid")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	if userID == otherUserID {
-		w.WriteHeader(http.StatusForbidden)
-		return
-	}
-
-	exists, err = rt.db.IdExists(otherUserID)
+	exists, err = rt.db.PhotoExists(photoID)
 
 	if err != nil {
-		ctx.Logger.WithError(err).Error("unfollow: error while checking if the user exists")
+		ctx.Logger.Error("unlike-photo: error while checking if the photo exists")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -67,10 +62,17 @@ func (rt *_router) UnfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	banned, err := rt.db.IsBanned(userID, otherUserID)
+	ownerID, err := rt.db.GetPhotoOwner(photoID)
+	if err != nil {
+		ctx.Logger.Error("unlike-photo: error while getting the photo owner")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	banned, err := rt.db.IsBanned(authID, ownerID)
 
 	if err != nil {
-		ctx.Logger.Error("get-profile: error while checking if the requester is banned by the owner")
+		ctx.Logger.Error("unlike-photo: error while checking if the requester is banned by the owner")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -80,14 +82,14 @@ func (rt *_router) UnfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	err = rt.db.UnfollowUser(userID, otherUserID)
+	err = rt.db.UnlikePhoto(userID, photoID)
 
 	if err != nil {
-		if errors.Is(err, database.ErrNotFollowed) {
+		if errors.Is(err, database.ErrAlreadyLiked) {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		} else {
-			ctx.Logger.WithError(err).Error("unfollow: error while removing the follow from the database")
+			ctx.Logger.Error("unlike-photo: error while removing the like")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

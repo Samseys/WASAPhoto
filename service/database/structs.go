@@ -12,6 +12,10 @@ type PhotoID struct {
 	ID uint64 `json:"PhotoID"`
 }
 
+type Comment struct {
+	Comment string `json:"Comment"`
+}
+
 type UserProfile struct {
 	Username  string                  `json:"Username"`
 	Photos    []uint64                `json:"Photos"`

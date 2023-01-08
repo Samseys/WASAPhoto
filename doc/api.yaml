@@ -71,7 +71,6 @@ paths:
     parameters:
       - $ref: "#/components/parameters/UserID"
     get:
-      security: []
       tags: ["UserInteraction"]
       operationId: getUserProfile
       summary: "Get the specified user's profile"
@@ -87,6 +86,7 @@ paths:
                 $ref: "#/components/schemas/UserProfile"
         '400': { $ref: "#/components/responses/BadRequest" }
         '401': { $ref: "#/components/responses/Unauthorized"}
+        '403': { $ref: "#/components/responses/Forbidden" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" }
   /users/{UserID}/name:
@@ -111,6 +111,7 @@ paths:
         '204': { description: "Username saved successfully." }
         '400': { $ref: "#/components/responses/BadRequest" }
         '401': { $ref: "#/components/responses/Unauthorized"}
+        '403': { $ref: "#/components/responses/Forbidden" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '409': { description: "Another user has this username." }
         '500': { $ref: "#/components/responses/InternalServerError" }
@@ -127,6 +128,7 @@ paths:
         '204': { description: "User followed successfully." }
         '400': { $ref: "#/components/responses/BadRequest" }
         '401': { $ref: "#/components/responses/Unauthorized"}
+        '403': { $ref: "#/components/responses/Forbidden" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '409': { description: "The user is already followed, cannot proceed" }
         '500': { $ref: "#/components/responses/InternalServerError" }
@@ -139,6 +141,7 @@ paths:
         '204': { description: "User unfollowed successfully." }
         '400': { $ref: "#/components/responses/BadRequest" }
         '401': { $ref: "#/components/responses/Unauthorized"}
+        '403': { $ref: "#/components/responses/Forbidden" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" }
   /users/{UserID}/banned/{OtherUserID}:
@@ -154,6 +157,7 @@ paths:
         '204': { description: "User banned successfully." }
         '400': { $ref: "#/components/responses/BadRequest" }
         '401': { $ref: "#/components/responses/Unauthorized"}
+        '403': { $ref: "#/components/responses/Forbidden" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '409': { description: "The user is already banned, cannot proceed" }
         '500': { $ref: "#/components/responses/InternalServerError" }
@@ -166,6 +170,7 @@ paths:
         '204': { description: "User unbanned successfully" }
         '400': { $ref: "#/components/responses/BadRequest" }
         '401': { $ref: "#/components/responses/Unauthorized"}
+        '403': { $ref: "#/components/responses/Forbidden" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" }
   /photos:
@@ -210,6 +215,7 @@ paths:
                     $ref: "#/components/schemas/PhotoID"
         '400': { $ref: "#/components/responses/BadRequest" }
         '401': { $ref: "#/components/responses/Unauthorized"}
+        '403': { $ref: "#/components/responses/Forbidden" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" }
   /photos/{PhotoID}:
@@ -224,6 +230,7 @@ paths:
         '204': { description: "Photo deleted." }
         '400': { $ref: "#/components/responses/BadRequest" }
         '401': { $ref: "#/components/responses/Unauthorized"}
+        '403': { $ref: "#/components/responses/Forbidden" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" }
   /photos/{PhotoID}/likes/{UserID}:
@@ -239,6 +246,7 @@ paths:
         '204': { description: "Liked the photo" }
         '400': { $ref: "#/components/responses/BadRequest" }
         '401': { $ref: "#/components/responses/Unauthorized"}
+        '403': { $ref: "#/components/responses/Forbidden" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '409': { description: "The photo already has a like" }
         '500': { $ref: "#/components/responses/InternalServerError" }
@@ -251,12 +259,13 @@ paths:
         '204': { description: "Unliked the photo" }
         '400': { $ref: "#/components/responses/BadRequest" }
         '401': { $ref: "#/components/responses/Unauthorized"}
+        '403': { $ref: "#/components/responses/Forbidden" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" }
   /photos/{PhotoID}/comments:
     parameters:
       - $ref: "#/components/parameters/PhotoID"
-    put:
+    post:
       tags: ["UserInteraction"]
       operationId: commentPhoto
       summary: Comment a photo
@@ -274,6 +283,7 @@ paths:
         '204': { description: "Commented the photo" }
         '400': { $ref: "#/components/responses/BadRequest" }
         '401': { $ref: "#/components/responses/Unauthorized"}
+        '403': { $ref: "#/components/responses/Forbidden" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" }
   /photos/{PhotoID}/comments/{CommentID}:
@@ -289,6 +299,7 @@ paths:
         '204': { description: "Uncommented the photo" }
         '400': { $ref: "#/components/responses/BadRequest" }
         '401': { $ref: "#/components/responses/Unauthorized"}
+        '403': { $ref: "#/components/responses/Forbidden" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" }
   /stream:
@@ -434,6 +445,8 @@ components:
   responses:
     Unauthorized:
       description: The request was not authenticated
+    Forbidden:
+      description: The request was not authorized
     ResultNotFound:
       description: The requested result has not been found.
     BadRequest:

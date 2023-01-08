@@ -11,23 +11,35 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"me.samsey/wasa-photos/service/api/reqcontext"
 	"me.samsey/wasa-photos/service/database"
+	"me.samsey/wasa-photos/service/utils"
 )
 
 func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	existsAndEqual, id := rt.db.IdExistsAndCompare(r, nil)
-	if !existsAndEqual {
+	authID := utils.GetAuthorizationID(r.Header.Get("Authorization"))
+	if authID == 0 {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
-	err := r.ParseMultipartForm(32 << 20)
+	exists, err := rt.db.IdExists(authID)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("follow: error while checking if the user exists")
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	if !exists {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	err = r.ParseMultipartForm(32 << 20)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("upload-photo: error parsing multipart header")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	mainComment := r.FormValue("mainComment")
+	mainComment := r.FormValue("MainComment")
 
 	if mainComment == "" {
 		ctx.Logger.WithError(err).Error("upload-photo: empty comment")
@@ -35,7 +47,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	file, fileheader, err := r.FormFile("uploadedPhoto")
+	file, fileheader, err := r.FormFile("UploadedPhoto")
 	if err != nil {
 		ctx.Logger.WithError(err).Error("upload-photo: error while reading the photo")
 		w.WriteHeader(http.StatusBadRequest)
@@ -44,7 +56,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 
 	ext := filepath.Ext(fileheader.Filename)
 
-	photoid, err := rt.db.UploadPhoto(id, mainComment, ext)
+	photoid, err := rt.db.UploadPhoto(authID, mainComment, ext)
 
 	if err != nil {
 		ctx.Logger.WithError(err).Error("upload-photo: database error")
@@ -74,7 +86,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	photoPath := filepath.Join(database.PhotoPath, strconv.FormatUint(id, 10))
+	photoPath := filepath.Join(database.PhotoPath, strconv.FormatUint(authID, 10))
 	err = os.MkdirAll(photoPath, os.ModePerm)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("upload-photo: error while creating the folder path")

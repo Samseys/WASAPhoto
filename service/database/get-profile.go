@@ -5,6 +5,8 @@ import (
 	"errors"
 )
 
+var ErrUserProfileNotFound = errors.New("user doesn't exist")
+
 func (db *appdbimpl) GetUserProfile(userid uint64) (UserProfile, error) {
 	var userProfile UserProfile
 	err := db.c.QueryRow("SELECT name FROM Users WHERE id = ?", userid).Scan(&userProfile.Username)

@@ -4,7 +4,7 @@ import "errors"
 
 var ErrNotFollowed = errors.New("the user is not followed")
 
-func (db *appdbimpl) Unfollow(followerID uint64, followedID uint64) error {
+func (db *appdbimpl) UnfollowUser(followerID uint64, followedID uint64) error {
 	sqlres, err := db.c.Exec("DELETE FROM Follows WHERE followerid = ? AND followedid = ?", followerID, followedID)
 	if err != nil {
 		return err

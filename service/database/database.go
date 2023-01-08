@@ -34,32 +34,28 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"net/http"
-
-	"github.com/julienschmidt/httprouter"
 )
 
-var ErrUserProfileNotFound = errors.New("user doesn't exist")
-var ErrUsernameAlradyTaken = errors.New("another user already has this username")
 var PhotoPath = "/home/wasa/Desktop/images/"
 
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
 	Login(username string) (uint64, error)
 	IdExists(id uint64) (bool, error)
-	IdExistsAndCompare(r *http.Request, ps httprouter.Params) (bool, uint64)
-	IsBanned(r *http.Request, otherUserID uint64) (bool, error)
+	IsBanned(authID uint64, otherUserID uint64) (bool, error)
 	ChangeName(username string, id uint64) error
 	GetUserID(username string) (uint64, error)
 	GetUserProfile(userid uint64) (UserProfile, error)
-	Follow(followerID uint64, followedID uint64) error
-	Unfollow(followerID uint64, followedID uint64) error
-	Ban(userID uint64, bannedID uint64) error
-	Unban(followerID uint64, followedID uint64) error
+	FollowUser(followerID uint64, followedID uint64) error
+	UnfollowUser(followerID uint64, followedID uint64) error
+	BanUser(userID uint64, bannedID uint64) error
+	UnbanUser(followerID uint64, followedID uint64) error
 	UploadPhoto(userID uint64, mainComment string, extension string) (uint64, error)
 	PhotoExists(photoID uint64) (bool, error)
 	GetPhotoOwner(photoID uint64) (uint64, error)
 	LikePhoto(userID uint64, photoID uint64) error
+	UnlikePhoto(userID uint64, photoID uint64) error
+	CommentPhoto(userID uint64, photoID uint64, comment string) error
 	Ping() error
 }
 
