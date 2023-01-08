@@ -5,11 +5,11 @@ type Name struct {
 }
 
 type UserID struct {
-	ID int `json:"UserID"`
+	ID uint64 `json:"UserID"`
 }
 
 type PhotoID struct {
-	ID int `json:"PhotoID"`
+	ID uint64 `json:"PhotoID"`
 }
 
 type UserProfile struct {
@@ -21,5 +21,5 @@ type UserProfile struct {
 
 type UserProfileSimplified struct {
 	Username string `json:"Username"`
-	ID       string `json:"UserID"`
+	ID       uint64 `json:"UserID"`
 }

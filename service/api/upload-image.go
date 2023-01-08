@@ -70,7 +70,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	imagePath := filepath.Join(database.ImagePath, strconv.Itoa(id))
+	imagePath := filepath.Join(database.ImagePath, strconv.FormatUint(id, 10))
 	err = os.MkdirAll(imagePath, os.ModePerm)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("can't process the image upload request")
@@ -78,7 +78,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	dst, err := os.Create(filepath.Join(imagePath, strconv.Itoa(photoid)+ext))
+	dst, err := os.Create(filepath.Join(imagePath, strconv.FormatUint(photoid, 10)+ext))
 	if err != nil {
 		ctx.Logger.WithError(err).Error("can't process the image upload request")
 		w.WriteHeader(http.StatusInternalServerError)

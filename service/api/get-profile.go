@@ -12,14 +12,19 @@ import (
 )
 
 func (rt *_router) GetUserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	userid, err := strconv.Atoi(ps.ByName("UserID"))
+	userid, err := strconv.ParseUint(ps.ByName("UserID"), 10, 64)
 	if err != nil {
 		ctx.Logger.Error("get user profile: parameter not valid")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	isBanned := rt.db.IsBanned(r, userid)
+	isBanned, err := rt.db.IsBanned(r, userid)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("can't process the get profile request")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	if isBanned {
 		w.WriteHeader(http.StatusUnauthorized)
 		return

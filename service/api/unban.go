@@ -17,14 +17,20 @@ func (rt *_router) UnbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	otherUserID, err := strconv.Atoi(ps.ByName("OtherUserID"))
+	otherUserID, err := strconv.ParseUint(ps.ByName("OtherUserID"), 10, 64)
 	if err != nil {
-		ctx.Logger.Error("follow: parameter not valid")
+		ctx.Logger.Error("parameter not valid")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	exists := rt.db.IdExists(otherUserID)
+	exists, err := rt.db.IdExists(otherUserID)
+
+	if err != nil {
+		ctx.Logger.Error("can't process the unban request")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 	if !exists {
 		w.WriteHeader(http.StatusNotFound)
@@ -38,7 +44,7 @@ func (rt *_router) UnbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 			w.WriteHeader(http.StatusConflict)
 			return
 		} else {
-			ctx.Logger.WithError(err).Error("can't process the follow request")
+			ctx.Logger.WithError(err).Error("can't process the unban request")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

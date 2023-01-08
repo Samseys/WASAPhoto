@@ -45,17 +45,17 @@ var ImagePath = "/home/wasa/Desktop/images/"
 
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
-	Login(username string) (int, error)
-	IdExists(id int) bool
-	IdExistsAndCompare(r *http.Request, ps httprouter.Params) (bool, int)
-	IsBanned(r *http.Request, otherUserID int) bool
-	ChangeName(username string, id int) error
-	GetUserProfile(userid int) (UserProfile, error)
-	Follow(followerID int, followedID int) error
-	Unfollow(followerID int, followedID int) error
-	Ban(userID int, bannedID int) error
-	Unban(followerID int, followedID int) error
-	UploadImage(userID int, mainComment string, extension string) (int, error)
+	Login(username string) (uint64, error)
+	IdExists(id uint64) (bool, error)
+	IdExistsAndCompare(r *http.Request, ps httprouter.Params) (bool, uint64)
+	IsBanned(r *http.Request, otherUserID uint64) (bool, error)
+	ChangeName(username string, id uint64) error
+	GetUserProfile(userid uint64) (UserProfile, error)
+	Follow(followerID uint64, followedID uint64) error
+	Unfollow(followerID uint64, followedID uint64) error
+	Ban(userID uint64, bannedID uint64) error
+	Unban(followerID uint64, followedID uint64) error
+	UploadImage(userID uint64, mainComment string, extension string) (uint64, error)
 	Ping() error
 }
 
@@ -128,13 +128,6 @@ func New(db *sql.DB) (AppDatabase, error) {
 	return &appdbimpl{
 		c: db,
 	}, nil
-}
-
-func (db *appdbimpl) IdExists(id int) bool {
-	var exists bool
-	db.c.QueryRow("SELECT EXISTS (SELECT 1 FROM Users WHERE id = ?)", id).Scan(&exists)
-
-	return exists
 }
 
 func (db *appdbimpl) Ping() error {

@@ -5,7 +5,7 @@ import (
 	"errors"
 )
 
-func (db *appdbimpl) GetUserProfile(userid int) (UserProfile, error) {
+func (db *appdbimpl) GetUserProfile(userid uint64) (UserProfile, error) {
 	var userProfile UserProfile
 	err := db.c.QueryRow("SELECT name FROM Users WHERE id = ?", userid).Scan(&userProfile.Username)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -20,7 +20,7 @@ func (db *appdbimpl) GetUserProfile(userid int) (UserProfile, error) {
 	followers := []UserProfileSimplified{}
 	for rows.Next() {
 		var profile UserProfileSimplified
-		rows.Scan(&profile.Username, &profile.ID)
+		err = rows.Scan(&profile.Username, &profile.ID)
 		if err != nil {
 			return userProfile, err
 		}
@@ -58,7 +58,7 @@ func (db *appdbimpl) GetUserProfile(userid int) (UserProfile, error) {
 	photos := []string{}
 	for rows.Next() {
 		var photoid string
-		rows.Scan(&photoid)
+		err = rows.Scan(&photoid)
 		if err != nil {
 			return userProfile, err
 		}

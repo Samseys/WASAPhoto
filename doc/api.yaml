@@ -28,7 +28,7 @@ paths:
         content:
           application/json:
             schema:
-              description: JSON containing the username
+              description: Object containing the username
               type: object
               properties:
                 Username:
@@ -40,23 +40,23 @@ paths:
           content:
             application/json:
               schema:
-                description: JSON containing the user's id
+                description: Object containing the user's id
                 type: object
                 properties:
                   UserID:
                     $ref: "#/components/schemas/UserID"
         '400': { $ref: "#/components/responses/BadRequest" }
         '500': { $ref: "#/components/responses/InternalServerError" }
-  /users:
+  /userid/{Username}:
     parameters:
       - $ref: "#/components/parameters/Username"
     get:
       security: []
       tags: ["UserInteraction"]
-      operationId: searchUserFromName
+      operationId: getUserID
       summary: "Get the specified user's id"
       description : |
-        Searchs in the database for a user with the specified name
+        Return the user with the specified name
       responses:
         '200':
           description: "User ID"
@@ -102,7 +102,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UsernameRequest"
+              type: object
+              description: "Object containing the username"
+              properties:
+                Username:
+                  $ref: "#/components/schemas/Username"
       responses:
         '204': { description: "Username saved successfully." }
         '400': { $ref: "#/components/responses/BadRequest" }
@@ -175,16 +179,19 @@ paths:
           multipart/form-data:
             schema:
               type: object
-              description: The image to upload
+              description: Form containing the image and a comment to post
               properties:
                 mainComment:
                   type: string
                   minLength: 1
                   maxLength: 60000
                   description: The comment
+                  pattern: '[\s\S]+'
                 uploadedImage:
                   type: string
                   format: binary
+                  description: The image to upload
+                  pattern: '[\s\S]+'
             encoding:
               uploadedImage:
                 contentType: image/png, image/jpeg, image/jpg
@@ -194,7 +201,7 @@ paths:
           content:
             application/json:
               schema:
-                description: JSON containing the photo's id
+                description: Object containing the photo's id
                 type: object
                 properties:
                   PhotoID:
@@ -256,7 +263,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CommentRequest"
+              type: object
+              description: "Object ontaining the comment"
+              properties:
+               comment:
+                  $ref: "#/components/schemas/Comment"
       responses:
         '204': { description: "Commented the photo" }
         '400': { $ref: "#/components/responses/BadRequest" }
@@ -335,7 +346,7 @@ components:
         Username:
           $ref: '#/components/schemas/Username'
     Stream:
-      description: "JSON Containing the stream"
+      description: "Object Containing the stream"
       type: object
       properties:
         photoArray:
@@ -345,21 +356,12 @@ components:
           maxItems: 300
           items:
            $ref: "#/components/schemas/PhotoID"
-    CommentRequest:
-      type: object
-      description: "JSON ontaining the comment"
-      properties:
-        comment:
-          type: string
-          minLength: 1
-          maxLength: 60000
-          description: The comment
-    UsernameRequest:
-      type: object
-      description: "JSON containing the username"
-      properties:
-        Username:
-          $ref: "#/components/schemas/Username"
+    Comment:
+      type: string
+      minLength: 1
+      maxLength: 60000
+      description: The comment
+      pattern: '[\s\S]+'
     Username:
       type: string
       description: "The user's username"

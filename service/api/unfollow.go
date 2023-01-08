@@ -17,14 +17,20 @@ func (rt *_router) UnfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	otherUserID, err := strconv.Atoi(ps.ByName("OtherUserID"))
+	otherUserID, err := strconv.ParseUint(ps.ByName("OtherUserID"), 10, 64)
 	if err != nil {
-		ctx.Logger.Error("follow: parameter not valid")
+		ctx.Logger.Error("unfollow: parameter not valid")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	exists := rt.db.IdExists(otherUserID)
+	exists, err := rt.db.IdExists(otherUserID)
+
+	if err != nil {
+		ctx.Logger.Error("can't process the unfollow request")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 	if !exists {
 		w.WriteHeader(http.StatusNotFound)
