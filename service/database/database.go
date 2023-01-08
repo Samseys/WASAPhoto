@@ -50,6 +50,7 @@ type AppDatabase interface {
 	IdExistsAndCompare(r *http.Request, ps httprouter.Params) (bool, uint64)
 	IsBanned(r *http.Request, otherUserID uint64) (bool, error)
 	ChangeName(username string, id uint64) error
+	GetUserID(username string) (uint64, error)
 	GetUserProfile(userid uint64) (UserProfile, error)
 	Follow(followerID uint64, followedID uint64) error
 	Unfollow(followerID uint64, followedID uint64) error

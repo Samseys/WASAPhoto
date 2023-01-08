@@ -14,7 +14,7 @@ type PhotoID struct {
 
 type UserProfile struct {
 	Username  string                  `json:"Username"`
-	Photos    []string                `json:"Photos"`
+	Photos    []uint64                `json:"Photos"`
 	Followers []UserProfileSimplified `json:"Followers"`
 	Following []UserProfileSimplified `json:"Following"`
 }

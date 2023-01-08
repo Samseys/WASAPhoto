@@ -8,6 +8,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"me.samsey/wasa-photos/service/api/reqcontext"
 	"me.samsey/wasa-photos/service/database"
+	"me.samsey/wasa-photos/service/utils"
 )
 
 func (rt *_router) Session(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -21,9 +22,12 @@ func (rt *_router) Session(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 
 	if name.Name == "" {
+		ctx.Logger.WithError(err).Error("session: empty name")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
+	name.Name = utils.MakeAlphaNumeric(name.Name)
 
 	id, err := rt.db.Login(name.Name)
 	if err != nil {

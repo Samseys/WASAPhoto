@@ -9,6 +9,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"me.samsey/wasa-photos/service/api/reqcontext"
 	"me.samsey/wasa-photos/service/database"
+	"me.samsey/wasa-photos/service/utils"
 )
 
 func (rt *_router) ChangeName(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -19,8 +20,8 @@ func (rt *_router) ChangeName(w http.ResponseWriter, r *http.Request, ps httprou
 	}
 
 	var name database.Name
-	err := json.NewDecoder(r.Body).Decode(&name)
 	defer r.Body.Close()
+	err := json.NewDecoder(r.Body).Decode(&name)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("change name: error decoding JSON")
 		w.WriteHeader(http.StatusBadRequest)
@@ -32,6 +33,8 @@ func (rt *_router) ChangeName(w http.ResponseWriter, r *http.Request, ps httprou
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
+	name.Name = utils.MakeAlphaNumeric(name.Name)
 
 	err = rt.db.ChangeName(name.Name, id)
 

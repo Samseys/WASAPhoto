@@ -47,7 +47,7 @@ paths:
                     $ref: "#/components/schemas/UserID"
         '400': { $ref: "#/components/responses/BadRequest" }
         '500': { $ref: "#/components/responses/InternalServerError" }
-  /userid/{Username}:
+  /userids/{Username}:
     parameters:
       - $ref: "#/components/parameters/Username"
     get:
@@ -385,10 +385,10 @@ components:
         pattern: '^.*?$'
         minLength: 3
         maxLength: 16
-      name: UserID
-      in: query
+      name: Username
+      in: path
       required: true
-      description: Username for search in query
+      description: Username for search in path
     UserID:
       schema:
         description: Active User ID

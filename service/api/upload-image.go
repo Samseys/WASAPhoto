@@ -22,6 +22,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 
 	err := r.ParseMultipartForm(32 << 20)
 	if err != nil {
+		ctx.Logger.WithError(err).Error("upload-image: error parsing multipart header")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -29,12 +30,14 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	mainComment := r.FormValue("mainComment")
 
 	if mainComment == "" {
+		ctx.Logger.WithError(err).Error("upload-image: empty comment")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	file, fileheader, err := r.FormFile("uploadedImage")
 	if err != nil {
+		ctx.Logger.WithError(err).Error("upload-image: error while reading the image")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -44,7 +47,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	photoid, err := rt.db.UploadImage(id, mainComment, ext)
 
 	if err != nil {
-		ctx.Logger.WithError(err).Error("can't process the image upload request")
+		ctx.Logger.WithError(err).Error("upload-image: database error")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -54,7 +57,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	buff := make([]byte, 512)
 	_, err = file.Read(buff)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("can't process the image upload request")
+		ctx.Logger.WithError(err).Error("upload-image: error while reading the file extension")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -67,20 +70,21 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 
 	_, err = file.Seek(0, io.SeekStart)
 	if err != nil {
+		ctx.Logger.WithError(err).Error("upload-image: error while resetting the pointer")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	imagePath := filepath.Join(database.ImagePath, strconv.FormatUint(id, 10))
 	err = os.MkdirAll(imagePath, os.ModePerm)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("can't process the image upload request")
+		ctx.Logger.WithError(err).Error("upload-image: error while creating the folder path")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	dst, err := os.Create(filepath.Join(imagePath, strconv.FormatUint(photoid, 10)+ext))
 	if err != nil {
-		ctx.Logger.WithError(err).Error("can't process the image upload request")
+		ctx.Logger.WithError(err).Error("upload-image: error while creating the file")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

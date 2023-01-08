@@ -50,14 +50,14 @@ func (db *appdbimpl) GetUserProfile(userid uint64) (UserProfile, error) {
 
 	userProfile.Following = following
 
-	rows, err = db.c.Query("SELECT id FROM Photos WHERE ownerid = ? ORDER BY timedate DESC", userid)
+	rows, err = db.c.Query("SELECT id FROM Photos WHERE ownerid = ? ORDER BY creationdate DESC", userid)
 	if err != nil {
 		return userProfile, err
 	}
 
-	photos := []string{}
+	photos := []uint64{}
 	for rows.Next() {
-		var photoid string
+		var photoid uint64
 		err = rows.Scan(&photoid)
 		if err != nil {
 			return userProfile, err

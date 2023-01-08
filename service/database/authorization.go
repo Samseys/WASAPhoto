@@ -1,7 +1,6 @@
 package database
 
 import (
-	"errors"
 	"net/http"
 	"strconv"
 	"strings"
@@ -47,7 +46,7 @@ func (db *appdbimpl) IdExists(id uint64) (bool, error) {
 func (db *appdbimpl) IsBanned(r *http.Request, otherUserID uint64) (bool, error) {
 	splitted := strings.SplitN(r.Header.Get("Authorization"), " ", 2)
 	if len(splitted) != 2 {
-		return false, errors.New("format not valid")
+		return false, nil
 	}
 
 	id, err := strconv.Atoi(splitted[1])
