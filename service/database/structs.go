@@ -28,11 +28,15 @@ type Comment struct {
 	CreationDate time.Time             `json:"CreationDate"`
 }
 
-type PhotoForStream struct {
-	ID       uint64                `json:"PhotoID"`
-	Owner    UserProfileSimplified `json:"Owner"`
-	Date     time.Time             `json:"CreationDate"`
-	Comments []Comment             `json:"Comments"`
+type PhotoForFrontend struct {
+	ID           uint64                `json:"PhotoID"`
+	Owner        UserProfileSimplified `json:"Owner"`
+	CreationDate time.Time             `json:"CreationDate"`
+	Comments     []Comment             `json:"Comments"`
+}
+
+type Stream struct {
+	Photos []PhotoForFrontend `json:"Photos"`
 }
 
 type UserProfile struct {

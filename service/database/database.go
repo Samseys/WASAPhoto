@@ -52,12 +52,14 @@ type AppDatabase interface {
 	UnbanUser(followerID uint64, followedID uint64) error
 	UploadPhoto(userID uint64, mainComment string, extension string) (uint64, error)
 	GetPhotoInfo(photoID uint64) (Photo, error)
+	GetPhotoInfoForFrontend(photoID uint64) (PhotoForFrontend, error)
 	DeletePhoto(photoID uint64) error
 	LikePhoto(userID uint64, photoID uint64) error
 	UnlikePhoto(userID uint64, photoID uint64) error
 	CommentPhoto(userID uint64, photoID uint64, comment string) error
 	GetComment(commentID uint64) (Comment, error)
 	DeleteComment(commentID uint64) error
+	GetStream(userID uint64) (Stream, error)
 	Ping() error
 }
 
