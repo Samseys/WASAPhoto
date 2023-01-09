@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -13,9 +14,13 @@ func (rt *_router) GetUserID(w http.ResponseWriter, r *http.Request, ps httprout
 	name := ps.ByName("Username")
 	id, err := rt.db.GetUserID(name)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("getuserid: error getting user id from db")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		if errors.Is(err, database.ErrUserProfileNotFound) {
+			w.WriteHeader(http.StatusNotFound)
+		} else {
+			ctx.Logger.WithError(err).Error("getuserid: error getting user id from db")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 	}
 	response := database.UserID{ID: id}
 	w.WriteHeader(http.StatusOK)

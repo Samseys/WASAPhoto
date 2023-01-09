@@ -64,7 +64,7 @@ func (rt *_router) ChangeName(w http.ResponseWriter, r *http.Request, ps httprou
 	err = rt.db.ChangeName(name.Name, userid)
 
 	if err != nil {
-		if errors.Is(err, database.ErrUsernameAlradyTaken) {
+		if errors.Is(err, database.ErrUsernameAlreadyTaken) {
 			w.WriteHeader(http.StatusConflict)
 			return
 		} else {

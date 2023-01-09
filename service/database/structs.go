@@ -14,15 +14,25 @@ type PhotoID struct {
 	ID uint64 `json:"PhotoID"`
 }
 
-type Comment struct {
-	Comment string `json:"Comment"`
-}
-
 type Photo struct {
 	ID           uint64    `json:"PhotoID"`
 	OwnerID      uint64    `json:"OwnerID"`
 	Extension    string    `json:"Extension"`
 	CreationDate time.Time `json:"CreationDate"`
+}
+
+type Comment struct {
+	ID           uint64                `json:"CommentID"`
+	Comment      string                `json:"Comment"`
+	Owner        UserProfileSimplified `json:"Owner"`
+	CreationDate time.Time             `json:"CreationDate"`
+}
+
+type PhotoForStream struct {
+	ID       uint64                `json:"PhotoID"`
+	Owner    UserProfileSimplified `json:"Owner"`
+	Date     time.Time             `json:"CreationDate"`
+	Comments []Comment             `json:"Comments"`
 }
 
 type UserProfile struct {

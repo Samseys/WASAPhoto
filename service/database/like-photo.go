@@ -1,9 +1,5 @@
 package database
 
-import "errors"
-
-var ErrAlreadyLiked = errors.New("the photo is already liked")
-
 func (db *appdbimpl) LikePhoto(userID uint64, photoID uint64) error {
 	sqlres, err := db.c.Exec("INSERT INTO Likes (photoid, userid) VALUES (?, ?) ON CONFLICT DO NOTHING", photoID, userID)
 	if err != nil {

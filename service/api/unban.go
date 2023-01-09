@@ -70,7 +70,7 @@ func (rt *_router) UnbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 	err = rt.db.UnbanUser(userID, otherUserID)
 
 	if err != nil {
-		if errors.Is(err, database.ErrNotFollowed) {
+		if errors.Is(err, database.ErrNotBanned) {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		} else {

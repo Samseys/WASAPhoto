@@ -56,9 +56,8 @@ type AppDatabase interface {
 	LikePhoto(userID uint64, photoID uint64) error
 	UnlikePhoto(userID uint64, photoID uint64) error
 	CommentPhoto(userID uint64, photoID uint64, comment string) error
-	CommentExists(commentID uint64) (bool, error)
+	GetComment(commentID uint64) (Comment, error)
 	DeleteComment(commentID uint64) error
-	GetCommentOwner(commentID uint64) (uint64, error)
 	Ping() error
 }
 

@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 	"strconv"
 
@@ -81,14 +80,9 @@ func (rt *_router) CommentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	err = rt.db.CommentPhoto(authID, photoID, comment.Comment)
 
 	if err != nil {
-		if errors.Is(err, database.ErrAlreadyLiked) {
-			w.WriteHeader(http.StatusConflict)
-			return
-		} else {
-			ctx.Logger.WithError(err).Error("comment-photo: error while inserting the comment")
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
+		ctx.Logger.WithError(err).Error("comment-photo: error while inserting the comment")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	w.WriteHeader(http.StatusNoContent)

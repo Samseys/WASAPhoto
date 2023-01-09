@@ -187,11 +187,7 @@ paths:
               description: Form containing the photo and a comment to post
               properties:
                 MainComment:
-                  type: string
-                  minLength: 1
-                  maxLength: 60000
-                  description: The comment
-                  pattern: '[\s\S]+'
+                  $ref: "#/components/schemas/CommentContent"
                 UploadedPhoto:
                   type: string
                   format: binary
@@ -277,8 +273,8 @@ paths:
               type: object
               description: "Object ontaining the comment"
               properties:
-               comment:
-                  $ref: "#/components/schemas/Comment"
+               Comment:
+                  $ref: "#/components/schemas/CommentContent"
       responses:
         '204': { description: "Commented the photo" }
         '400': { $ref: "#/components/responses/BadRequest" }
@@ -368,8 +364,8 @@ components:
           minItems: 0
           maxItems: 300
           items:
-           $ref: "#/components/schemas/PhotoID"
-    Comment:
+            $ref: "#/components/schemas/Photo"
+    CommentContent:
       type: string
       minLength: 1
       maxLength: 60000
@@ -382,6 +378,35 @@ components:
       pattern: '^.*?$'
       minLength: 3
       maxLength: 16
+    Photo:
+      type: object
+      description: Object containing the photo data
+      properties:
+        PhotoID:
+          $ref: "#/components/schemas/PhotoID"
+        Owner:
+          $ref: "#/components/schemas/UserProfileSimplified"
+        Comments:
+          type: array
+          description: "Array containing the comments in ascending order by time of posting"
+          minItems: 0
+          maxItems: 100000
+          items:
+            $ref: "#/components/schemas/Comment"
+        CreationDate:
+            $ref: "#/components/schemas/Date"
+    Comment:
+      type: object
+      description: Object containing the comment data
+      properties:
+        CommentID:
+          $ref: "#/components/schemas/CommentID"
+        Comment:
+          $ref: "#/components/schemas/CommentContent"
+        Owner:
+          $ref: "#/components/schemas/UserProfileSimplified"
+        CreationDate:
+          $ref: "#/components/schemas/Date"
     UserID:
       type: integer
       description: "User's numerical ID"
@@ -389,6 +414,18 @@ components:
     PhotoID:
       type: integer
       description: "Photo's numerical ID"
+      example: 1
+    CommentID:
+      type: integer
+      description: "Comment's numerical ID"
+      example: 1
+    Date:
+        description: Date 
+        type: string
+        format: date-time
+        minLength: 3
+        maxLength: 20
+        pattern: '[\s\S]+'
   parameters:
     Username:
       schema:
@@ -406,7 +443,7 @@ components:
       schema:
         description: Active User ID
         type: integer
-        example: 1111111
+        example: 1
         readOnly: true
       name: UserID
       in: path

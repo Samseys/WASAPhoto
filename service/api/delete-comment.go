@@ -69,27 +69,20 @@ func (rt *_router) DeleteComment(w http.ResponseWriter, r *http.Request, ps http
 		return
 	}
 
-	exists, err = rt.db.CommentExists(commentID)
-	if err != nil {
-		ctx.Logger.WithError(err).Error("delete-comment: checking if the comment exists")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	if !exists {
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
-
-	commentOwnerID, err := rt.db.GetCommentOwner(commentID)
+	comment, err := rt.db.GetComment(commentID)
 
 	if err != nil {
-		ctx.Logger.WithError(err).Error("delete-comment: error while getting the comment owner id")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		if errors.Is(database.ErrCommentNotFound, err) {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		} else {
+			ctx.Logger.WithError(err).Error("delete-comment: error getting the comment info")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
 	}
 
-	if authID != commentOwnerID {
+	if authID != comment.Owner.ID {
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
