@@ -16,13 +16,13 @@ func (rt *_router) Session(w http.ResponseWriter, r *http.Request, ps httprouter
 	err := json.NewDecoder(r.Body).Decode(&name)
 	defer r.Body.Close()
 	if err != nil {
-		ctx.Logger.WithError(err).Error("session: error decoding user")
+		ctx.Logger.WithError(err).WithError(err).Error("session: error decoding user")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	if name.Name == "" {
-		ctx.Logger.WithError(err).Error("session: empty name")
+		ctx.Logger.Error("session: empty name")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

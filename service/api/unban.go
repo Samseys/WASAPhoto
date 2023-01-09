@@ -32,7 +32,7 @@ func (rt *_router) UnbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 	userID, err := strconv.ParseUint(ps.ByName("UserID"), 10, 64)
 
 	if err != nil {
-		ctx.Logger.WithError(err).Error("unban: parameter not valid")
+		ctx.Logger.WithError(err).Error("unban: userid parameter not valid")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -44,7 +44,7 @@ func (rt *_router) UnbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 
 	otherUserID, err := strconv.ParseUint(ps.ByName("OtherUserID"), 10, 64)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("unban: parameter not valid")
+		ctx.Logger.WithError(err).Error("unban: otheruserid parameter not valid")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

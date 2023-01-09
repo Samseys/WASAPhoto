@@ -32,7 +32,7 @@ func (rt *_router) UnfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 	userID, err := strconv.ParseUint(ps.ByName("UserID"), 10, 64)
 
 	if err != nil {
-		ctx.Logger.WithError(err).Error("unfollow: parameter not valid")
+		ctx.Logger.WithError(err).Error("unfollow: userid parameter not valid")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -44,7 +44,7 @@ func (rt *_router) UnfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 
 	otherUserID, err := strconv.ParseUint(ps.ByName("OtherUserID"), 10, 64)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("unfollow: parameter not valid")
+		ctx.Logger.WithError(err).Error("unfollow: otheruserid parameter not valid")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -57,7 +57,7 @@ func (rt *_router) UnfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 	exists, err = rt.db.IdExists(otherUserID)
 
 	if err != nil {
-		ctx.Logger.WithError(err).Error("unfollow: error while checking if the user exists")
+		ctx.Logger.WithError(err).Error("unfollow: error while checking if the other user exists")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -70,7 +70,7 @@ func (rt *_router) UnfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 	banned, err := rt.db.IsBanned(userID, otherUserID)
 
 	if err != nil {
-		ctx.Logger.Error("get-profile: error while checking if the requester is banned by the owner")
+		ctx.Logger.WithError(err).Error("unfollow: error while checking if the requester is banned by the owner")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

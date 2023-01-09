@@ -14,7 +14,7 @@ import (
 	"me.samsey/wasa-photos/service/utils"
 )
 
-func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) UploadPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	authID := utils.GetAuthorizationID(r.Header.Get("Authorization"))
 	if authID == 0 {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -23,7 +23,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 
 	exists, err := rt.db.IdExists(authID)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("follow: error while checking if the user exists")
+		ctx.Logger.WithError(err).Error("upload-photo: error while checking if the user exists")
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
@@ -42,7 +42,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	mainComment := r.FormValue("MainComment")
 
 	if mainComment == "" {
-		ctx.Logger.WithError(err).Error("upload-photo: empty comment")
+		ctx.Logger.Error("upload-photo: empty comment")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

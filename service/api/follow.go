@@ -70,7 +70,7 @@ func (rt *_router) FollowUser(w http.ResponseWriter, r *http.Request, ps httprou
 	banned, err := rt.db.IsBanned(userID, otherUserID)
 
 	if err != nil {
-		ctx.Logger.Error("like-photo: error while checking if the requester is banned by the owner")
+		ctx.Logger.WithError(err).Error("like-photo: error while checking if the requester is banned by the owner")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

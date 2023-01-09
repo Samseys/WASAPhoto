@@ -7,14 +7,14 @@ import (
 
 var ErrUserProfileNotFound = errors.New("user doesn't exist")
 
-func (db *appdbimpl) GetUserProfile(userid uint64) (UserProfile, error) {
+func (db *appdbimpl) GetUserProfile(userID uint64) (UserProfile, error) {
 	var userProfile UserProfile
-	err := db.c.QueryRow("SELECT name FROM Users WHERE id = ?", userid).Scan(&userProfile.Username)
+	err := db.c.QueryRow("SELECT name FROM Users WHERE id = ?", userID).Scan(&userProfile.Username)
 	if errors.Is(err, sql.ErrNoRows) {
 		return userProfile, ErrUserProfileNotFound
 	}
 
-	rows, err := db.c.Query("SELECT Users.name, Follows.followerid FROM Follows INNER JOIN Users ON Users.id = Follows.followerid WHERE followedid = ?", userid)
+	rows, err := db.c.Query("SELECT Users.name, Follows.followerid FROM Follows INNER JOIN Users ON Users.id = Follows.followerid WHERE followedid = ?", userID)
 	if err != nil {
 		return userProfile, err
 	}
@@ -33,7 +33,7 @@ func (db *appdbimpl) GetUserProfile(userid uint64) (UserProfile, error) {
 
 	userProfile.Followers = followers
 
-	rows, err = db.c.Query("SELECT Users.name, Follows.followedid FROM Follows INNER JOIN Users ON Users.id = Follows.followedid WHERE followerid = ?", userid)
+	rows, err = db.c.Query("SELECT Users.name, Follows.followedid FROM Follows INNER JOIN Users ON Users.id = Follows.followedid WHERE followerid = ?", userID)
 	if err != nil {
 		return userProfile, err
 	}
@@ -52,7 +52,7 @@ func (db *appdbimpl) GetUserProfile(userid uint64) (UserProfile, error) {
 
 	userProfile.Following = following
 
-	rows, err = db.c.Query("SELECT id FROM Photos WHERE ownerid = ? ORDER BY creationdate DESC", userid)
+	rows, err = db.c.Query("SELECT id FROM Photos WHERE ownerid = ? ORDER BY creationdate DESC", userID)
 	if err != nil {
 		return userProfile, err
 	}

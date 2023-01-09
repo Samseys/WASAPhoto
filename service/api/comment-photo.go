@@ -32,35 +32,28 @@ func (rt *_router) CommentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 
 	photoID, err := strconv.ParseUint(ps.ByName("PhotoID"), 10, 64)
 	if err != nil {
-		ctx.Logger.Error("comment-photo: parameter not valid")
+		ctx.Logger.WithError(err).Error("comment-photo: photoid parameter not valid")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	exists, err = rt.db.PhotoExists(photoID)
+	photoInfo, err := rt.db.GetPhotoInfo(photoID)
 
 	if err != nil {
-		ctx.Logger.Error("comment-photo: error while checking if the photo exists")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		if err == database.ErrPhotoNotFound {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		} else {
+			ctx.Logger.WithError(err).Error("comment-photo: error while getting the photo info from the database")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 	}
 
-	if !exists {
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
-
-	ownerID, err := rt.db.GetPhotoOwner(photoID)
-	if err != nil {
-		ctx.Logger.Error("comment-photo: error while getting the photo owner")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	banned, err := rt.db.IsBanned(authID, ownerID)
+	banned, err := rt.db.IsBanned(authID, photoInfo.OwnerID)
 
 	if err != nil {
-		ctx.Logger.Error("comment-photo: error while checking if the requester is banned by the owner")
+		ctx.Logger.WithError(err).Error("comment-photo: error while checking if the requester is banned by the photo owner")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -74,13 +67,13 @@ func (rt *_router) CommentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	err = json.NewDecoder(r.Body).Decode(&comment)
 	defer r.Body.Close()
 	if err != nil {
-		ctx.Logger.WithError(err).Error("comment-photo: error decoding ")
+		ctx.Logger.WithError(err).Error("comment-photo: error decoding the JSON")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	if comment.Comment == "" {
-		ctx.Logger.WithError(err).Error("comment-photo: empty comment")
+		ctx.Logger.Error("comment-photo: empty comment")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -92,7 +85,7 @@ func (rt *_router) CommentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 			w.WriteHeader(http.StatusConflict)
 			return
 		} else {
-			ctx.Logger.Error("comment-photo: error while inserting the comment")
+			ctx.Logger.WithError(err).Error("comment-photo: error while inserting the comment")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

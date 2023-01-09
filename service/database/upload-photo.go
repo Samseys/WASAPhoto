@@ -8,9 +8,5 @@ func (db *appdbimpl) UploadPhoto(userID uint64, mainComment string, ext string) 
 
 	photoID, err := sqlres.LastInsertId()
 
-	if err != nil {
-		return 0, err
-	}
-
-	return uint64(photoID), nil
+	return uint64(photoID), err
 }

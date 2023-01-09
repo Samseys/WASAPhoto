@@ -1,5 +1,7 @@
 package database
 
+import "time"
+
 type Name struct {
 	Name string `json:"Username"`
 }
@@ -14,6 +16,13 @@ type PhotoID struct {
 
 type Comment struct {
 	Comment string `json:"Comment"`
+}
+
+type Photo struct {
+	ID           uint64    `json:"PhotoID"`
+	OwnerID      uint64    `json:"OwnerID"`
+	Extension    string    `json:"Extension"`
+	CreationDate time.Time `json:"CreationDate"`
 }
 
 type UserProfile struct {

@@ -41,7 +41,7 @@ func (rt *_router) GetUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	banned, err := rt.db.IsBanned(authID, otherUserID)
 
 	if err != nil {
-		ctx.Logger.Error("get-profile: error while checking if the requester is banned by the owner")
+		ctx.Logger.WithError(err).Error("get-profile: error while checking if the requester is banned by the owner")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

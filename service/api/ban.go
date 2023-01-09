@@ -32,7 +32,7 @@ func (rt *_router) BanUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	userID, err := strconv.ParseUint(ps.ByName("UserID"), 10, 64)
 
 	if err != nil {
-		ctx.Logger.WithError(err).Error("ban: parameter not valid")
+		ctx.Logger.WithError(err).Error("ban: userid parameter not valid")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -44,7 +44,7 @@ func (rt *_router) BanUser(w http.ResponseWriter, r *http.Request, ps httprouter
 
 	otherUserID, err := strconv.ParseUint(ps.ByName("OtherUserID"), 10, 64)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("ban: parameter not valid")
+		ctx.Logger.WithError(err).Error("ban: otheruserid parameter not valid")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -57,7 +57,7 @@ func (rt *_router) BanUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	exists, err = rt.db.IdExists(otherUserID)
 
 	if err != nil {
-		ctx.Logger.WithError(err).Error("ban: error while checking if the user exists")
+		ctx.Logger.WithError(err).Error("ban: error while checking if the other user exists")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

@@ -31,35 +31,28 @@ func (rt *_router) LikePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 
 	photoID, err := strconv.ParseUint(ps.ByName("PhotoID"), 10, 64)
 	if err != nil {
-		ctx.Logger.Error("like-photo: parameter not valid")
+		ctx.Logger.WithError(err).Error("like-photo: parameter not valid")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	exists, err = rt.db.PhotoExists(photoID)
+	photoInfo, err := rt.db.GetPhotoInfo(photoID)
 
 	if err != nil {
-		ctx.Logger.Error("like-photo: error while checking if the photo exists")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		if err == database.ErrPhotoNotFound {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		} else {
+			ctx.Logger.WithError(err).Error("like-photo: error while getting the photo info from the database")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 	}
 
-	if !exists {
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
-
-	ownerID, err := rt.db.GetPhotoOwner(photoID)
-	if err != nil {
-		ctx.Logger.Error("like-photo: error while getting the photo owner")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	banned, err := rt.db.IsBanned(authID, ownerID)
+	banned, err := rt.db.IsBanned(authID, photoInfo.OwnerID)
 
 	if err != nil {
-		ctx.Logger.Error("like-photo: error while checking if the requester is banned by the owner")
+		ctx.Logger.WithError(err).Error("like-photo: error while checking if the requester is banned by the owner")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -76,7 +69,7 @@ func (rt *_router) LikePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 			w.WriteHeader(http.StatusConflict)
 			return
 		} else {
-			ctx.Logger.Error("like-photo: error while inserting the like")
+			ctx.Logger.WithError(err).Error("like-photo: error while inserting the like")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

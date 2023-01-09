@@ -34,7 +34,7 @@ func (rt *_router) ChangeName(w http.ResponseWriter, r *http.Request, ps httprou
 	userid, err := strconv.ParseUint(ps.ByName("UserID"), 10, 64)
 
 	if err != nil {
-		ctx.Logger.WithError(err).Error("change-name: parameter not valid")
+		ctx.Logger.WithError(err).Error("change-name: userid parameter not valid")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -54,7 +54,7 @@ func (rt *_router) ChangeName(w http.ResponseWriter, r *http.Request, ps httprou
 	}
 
 	if name.Name == "" {
-		ctx.Logger.WithError(err).Error("change-name: error validating JSON")
+		ctx.Logger.Error("change-name: name empty")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
