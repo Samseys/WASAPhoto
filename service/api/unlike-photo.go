@@ -78,7 +78,7 @@ func (rt *_router) UnlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	err = rt.db.UnlikePhoto(userID, photoID)
 
 	if err != nil {
-		if errors.Is(err, database.ErrAlreadyLiked) {
+		if errors.Is(err, database.ErrNotLiked) {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		} else {

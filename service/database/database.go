@@ -88,7 +88,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 			maincomment TEXT NOT NULL,
 			extension TEXT NOT NULL,
 			creationdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-			FOREIGN KEY(ownerid) REFERENCES Users(id)
+			FOREIGN KEY(ownerid) REFERENCES Users(id) ON DELETE CASCADE
 			);`)
 		sqlStatements = append(sqlStatements, `CREATE TABLE Comments (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -96,28 +96,28 @@ func New(db *sql.DB) (AppDatabase, error) {
 			photoid INTEGER NOT NULL,
 			creationdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
 			comment TEXT NOT NULL,
-			FOREIGN KEY (ownerid) REFERENCES Users(id),
+			FOREIGN KEY (ownerid) REFERENCES Users(id) ON DELETE CASCADE,
 			FOREIGN KEY (photoid) REFERENCES Photos(id) ON DELETE CASCADE
 			);`)
 		sqlStatements = append(sqlStatements, `CREATE TABLE Follows (
 			followerid INTEGER NOT NULL,
 			followedid TEXT NOT NULL,
-			FOREIGN KEY (followerid) REFERENCES Users(id),
-			FOREIGN KEY (followedid) REFERENCES Users(id),
+			FOREIGN KEY (followerid) REFERENCES Users(id) ON DELETE CASCADE,
+			FOREIGN KEY (followedid) REFERENCES Users(id) ON DELETE CASCADE,
 			PRIMARY KEY(followerid, followedid)
 			);`)
 		sqlStatements = append(sqlStatements, `CREATE TABLE Bans (
 			userid INTEGER NOT NULL,
 			bannedid TEXT NOT NULL,
-			FOREIGN KEY (userid) REFERENCES Users(id),
-			FOREIGN KEY (bannedid) REFERENCES Users(id),
+			FOREIGN KEY (userid) REFERENCES Users(id) ON DELETE CASCADE,
+			FOREIGN KEY (bannedid) REFERENCES Users(id) ON DELETE CASCADE,
 			PRIMARY KEY(userid, bannedid)
 			);`)
 		sqlStatements = append(sqlStatements, `CREATE TABLE Likes (
 			photoid INTEGER NOT NULL,
 			userid TEXT NOT NULL,
-			FOREIGN KEY (photoid) REFERENCES Photos(id),
-			FOREIGN KEY (userid) REFERENCES Photos(id),
+			FOREIGN KEY (photoid) REFERENCES Photos(id) ON DELETE CASCADE,
+			FOREIGN KEY (userid) REFERENCES Users(id) ON DELETE CASCADE,
 			PRIMARY KEY(photoid, userid)
 			);`)
 		for _, sqlStmt := range sqlStatements {
@@ -126,6 +126,11 @@ func New(db *sql.DB) (AppDatabase, error) {
 				return nil, fmt.Errorf("error creating database structure: %w", err)
 			}
 		}
+	}
+
+	_, err = db.Exec("PRAGMA foreign_keys = ON")
+	if err != nil {
+		return nil, fmt.Errorf("error enableing foreign keys support: %w", err)
 	}
 
 	return &appdbimpl{
