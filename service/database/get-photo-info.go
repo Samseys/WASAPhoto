@@ -21,7 +21,7 @@ func (db *appdbimpl) GetPhotoInfoForFrontend(photoID uint64) (PhotoForFrontend, 
 	if errors.Is(err, sql.ErrNoRows) {
 		return photo, ErrPhotoNotFound
 	}
-	rows, err := db.c.Query("SELECT Comments.id, Users.id, Users.name, Comments.creationdate, Comments.comment FROM Comments INNER JOIN Users ON Comments.ownerid = Users.id WHERE photoid = ?", photoID)
+	rows, err := db.c.Query("SELECT Comments.id, Users.id, Users.name, Comments.creationdate, Comments.comment FROM Comments INNER JOIN Users ON Comments.ownerid = Users.id WHERE photoid = ? ORDER BY Comments.creationdate ASC", photoID)
 	if err != nil {
 		return photo, err
 	}
