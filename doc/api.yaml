@@ -386,6 +386,10 @@ components:
           $ref: "#/components/schemas/PhotoID"
         Owner:
           $ref: "#/components/schemas/UserProfileSimplified"
+        CreationDate:
+            $ref: "#/components/schemas/Date"
+        Comment:
+          $ref: "#/components/schemas/CommentContent"
         Comments:
           type: array
           description: "Array containing the comments in ascending order by time of posting"
@@ -393,8 +397,6 @@ components:
           maxItems: 100000
           items:
             $ref: "#/components/schemas/Comment"
-        CreationDate:
-            $ref: "#/components/schemas/Date"
     Comment:
       type: object
       description: Object containing the comment data

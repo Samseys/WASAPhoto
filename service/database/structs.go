@@ -32,6 +32,7 @@ type PhotoForFrontend struct {
 	ID           uint64                `json:"PhotoID"`
 	Owner        UserProfileSimplified `json:"Owner"`
 	CreationDate time.Time             `json:"CreationDate"`
+	Comment      string                `json:"Comment"`
 	Comments     []Comment             `json:"Comments"`
 }
 

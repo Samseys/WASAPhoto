@@ -17,7 +17,7 @@ func (db *appdbimpl) GetPhotoInfo(photoID uint64) (Photo, error) {
 
 func (db *appdbimpl) GetPhotoInfoForFrontend(photoID uint64) (PhotoForFrontend, error) {
 	var photo PhotoForFrontend
-	err := db.c.QueryRow("SELECT id, ownerid, creationdate FROM Photos WHERE id = ?", photoID).Scan(&photo.ID, &photo.Owner.ID, &photo.CreationDate)
+	err := db.c.QueryRow("SELECT Photos.id, name, ownerid, maincomment, creationdate FROM Photos INNER JOIN Users ON Photos.ownerid = Users.id WHERE Photos.id = ?", photoID).Scan(&photo.ID, &photo.Owner.Username, &photo.Owner.ID, &photo.Comment, &photo.CreationDate)
 	if errors.Is(err, sql.ErrNoRows) {
 		return photo, ErrPhotoNotFound
 	}
@@ -28,7 +28,7 @@ func (db *appdbimpl) GetPhotoInfoForFrontend(photoID uint64) (PhotoForFrontend, 
 
 	for rows.Next() {
 		var comment Comment
-		err = rows.Scan(comment.ID, comment.Owner.ID)
+		err = rows.Scan(&comment.ID, &comment.Owner.ID, &comment.Owner.Username, &comment.CreationDate, &comment.Comment)
 		if err != nil {
 			return photo, err
 		}
