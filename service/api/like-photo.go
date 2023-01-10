@@ -39,7 +39,7 @@ func (rt *_router) LikePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 	photoInfo, err := rt.db.GetPhotoInfo(photoID)
 
 	if err != nil {
-		if err == database.ErrPhotoNotFound {
+		if errors.Is(err, database.ErrPhotoNotFound) {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		} else {

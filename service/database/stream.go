@@ -20,6 +20,10 @@ func (db *appdbimpl) GetStream(userID uint64) (Stream, error) {
 		stream.Photos = append(stream.Photos, photo)
 	}
 
+	if err = rows.Err(); err != nil {
+		return stream, err
+	}
+
 	rows.Close()
 
 	return stream, nil

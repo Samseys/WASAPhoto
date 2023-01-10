@@ -36,7 +36,7 @@ import (
 	"fmt"
 )
 
-var PhotoPath = "/home/wasa/Desktop/images/"
+var PhotoPath = "/images/"
 
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {

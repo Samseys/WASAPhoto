@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -40,7 +41,7 @@ func (rt *_router) DeletePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	photoInfo, err := rt.db.GetPhotoInfo(photoID)
 
 	if err != nil {
-		if err == database.ErrPhotoNotFound {
+		if errors.Is(err, database.ErrPhotoNotFound) {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		} else {

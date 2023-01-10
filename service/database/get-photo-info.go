@@ -35,6 +35,10 @@ func (db *appdbimpl) GetPhotoInfoForFrontend(photoID uint64) (PhotoForFrontend, 
 		photo.Comments = append(photo.Comments, comment)
 	}
 
+	if err = rows.Err(); err != nil {
+		return photo, err
+	}
+
 	rows.Close()
 
 	return photo, nil
