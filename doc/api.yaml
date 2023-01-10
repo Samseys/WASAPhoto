@@ -217,6 +217,23 @@ paths:
   /photos/{PhotoID}:
     parameters:
       - $ref: "#/components/parameters/PhotoID"
+    get:
+      tags: ["ManagePhotos"]
+      operationId: getPhotoInfo
+      summary: Get the photo's info
+      description : "Get the photo's info"
+      responses:
+        '200':
+          description: "Photo info retrieved successfully." 
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Photo" 
+        '400': { $ref: "#/components/responses/BadRequest" }
+        '401': { $ref: "#/components/responses/Unauthorized"}
+        '403': { $ref: "#/components/responses/Forbidden" }
+        '404': { $ref: "#/components/responses/ResultNotFound" }
+        '500': { $ref: "#/components/responses/InternalServerError" }
     delete:
       tags: ["ManagePhotos"]
       operationId: deletePhoto
@@ -224,6 +241,31 @@ paths:
       description : "Delete a photo owned by the user"
       responses:
         '204': { description: "Photo deleted." }
+        '400': { $ref: "#/components/responses/BadRequest" }
+        '401': { $ref: "#/components/responses/Unauthorized"}
+        '403': { $ref: "#/components/responses/Forbidden" }
+        '404': { $ref: "#/components/responses/ResultNotFound" }
+        '500': { $ref: "#/components/responses/InternalServerError" }
+  /photos/{PhotoID}/file:
+    parameters:
+      - $ref: "#/components/parameters/PhotoID"
+    get:
+      tags: ["ManagePhotos"]
+      operationId: getPhotoFile
+      summary: Get photo file
+      description : "Get the photo file"
+      responses:
+        '200':
+          description: The photo has been successfully retrieved
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+                description: The requested photo
+                pattern: '[\s\S]+'
+                minLength: 1
+                maxLength: 18446744073709551615
         '400': { $ref: "#/components/responses/BadRequest" }
         '401': { $ref: "#/components/responses/Unauthorized"}
         '403': { $ref: "#/components/responses/Forbidden" }

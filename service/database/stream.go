@@ -2,7 +2,7 @@ package database
 
 func (db *appdbimpl) GetStream(userID uint64) (Stream, error) {
 	var stream Stream
-	rows, err := db.c.Query("SELECT Photos.id FROM Photos INNER JOIN Follows ON Photos.ownerid = Follows.followedid WHERE followerid = ? ORDER BY creationdate DESC", userID)
+	rows, err := db.c.Query("SELECT id FROM (SELECT Photos.id, Photos.creationdate FROM Photos INNER JOIN Follows ON Photos.ownerid = Follows.followedid WHERE followerid = ? EXCEPT SELECT Photos.id, Photos.creationdate FROM Photos INNER JOIN Bans ON Photos.ownerid = Bans.userid WHERE bannedid = ? ORDER BY creationdate DESC)", userID, userID)
 	if err != nil {
 		return stream, err
 	}

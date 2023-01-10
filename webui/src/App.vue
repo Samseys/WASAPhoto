@@ -2,16 +2,31 @@
 import { RouterLink, RouterView } from 'vue-router'
 </script>
 <script>
-export default {}
+export default {
+	data: function() {
+		return {
+
+		}
+	},
+	mounted() {
+	}
+}
 </script>
 
 <template>
 
 	<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-		<a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#/">Example App</a>
+		<a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#/">WASA Photos</a>
 		<button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
-		</button>
+		</button>							
+		<div class="btn-group me-2">
+		<RouterLink to="/login" class="nav-link">
+				<button type="button" class="btn btn-sm btn-outline-primary">
+					Login/Logout
+				</button>
+			</RouterLink>
+		</div>
 	</header>
 
 	<div class="container-fluid">
@@ -32,12 +47,6 @@ export default {}
 							<RouterLink to="/link1" class="nav-link">
 								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#layout"/></svg>
 								Menu item 1
-							</RouterLink>
-						</li>
-						<li class="nav-item">
-							<RouterLink to="/link2" class="nav-link">
-								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#key"/></svg>
-								Menu item 2
 							</RouterLink>
 						</li>
 					</ul>
