@@ -78,7 +78,7 @@ func (rt *_router) CommentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	err = rt.db.CommentPhoto(authID, photoID, comment.Comment)
+	commentID, err := rt.db.CommentPhoto(authID, photoID, comment.Comment)
 
 	if err != nil {
 		ctx.Logger.WithError(err).Error("comment-photo: error while inserting the comment")
@@ -86,5 +86,14 @@ func (rt *_router) CommentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	response, err := rt.db.GetComment(commentID)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("comment-photo: error while getting the new comment")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("content-type", "application/json")
+	_ = json.NewEncoder(w).Encode(response)
 }

@@ -56,7 +56,7 @@ type AppDatabase interface {
 	DeletePhoto(photoID uint64) error
 	LikePhoto(userID uint64, photoID uint64) error
 	UnlikePhoto(userID uint64, photoID uint64) error
-	CommentPhoto(userID uint64, photoID uint64, comment string) error
+	CommentPhoto(userID uint64, photoID uint64, comment string) (uint64, error)
 	GetComment(commentID uint64) (Comment, error)
 	DeleteComment(commentID uint64) error
 	GetStream(userID uint64) (Stream, error)
