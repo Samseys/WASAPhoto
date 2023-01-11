@@ -32,6 +32,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 
 	"github.com/ardanlabs/conf"
@@ -97,6 +98,9 @@ func run() error {
 		logger.WithError(err).Error("error creating AppDatabase")
 		return fmt.Errorf("creating AppDatabase: %w", err)
 	}
+	database.PhotoPath, _ = filepath.Split(cfg.DB.Filename)
+
+	database.PhotoPath = filepath.Join(database.PhotoPath, "images")
 
 	// Start (main) API server
 	logger.Info("initializing API server")

@@ -20,6 +20,7 @@ func (rt *_router) Stream(w http.ResponseWriter, r *http.Request, ps httprouter.
 	if err != nil {
 		ctx.Logger.WithError(err).Error("stream: error while checking if the user exists")
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	if !exists {
@@ -31,6 +32,7 @@ func (rt *_router) Stream(w http.ResponseWriter, r *http.Request, ps httprouter.
 	if err != nil {
 		ctx.Logger.WithError(err).Error("stream: error while getting the stream data from the db")
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)

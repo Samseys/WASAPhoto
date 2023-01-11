@@ -24,6 +24,7 @@ func (rt *_router) ChangeName(w http.ResponseWriter, r *http.Request, ps httprou
 	if err != nil {
 		ctx.Logger.WithError(err).Error("change-name: error while checking if the user exists")
 		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	if !exists {

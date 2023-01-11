@@ -22,6 +22,7 @@ func (rt *_router) FollowUser(w http.ResponseWriter, r *http.Request, ps httprou
 	if err != nil {
 		ctx.Logger.WithError(err).Error("follow: error while checking if the user exists")
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	if !exists {

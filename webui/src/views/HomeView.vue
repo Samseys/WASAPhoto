@@ -1,6 +1,6 @@
 <script>
 export default {
-	data: function() {
+	data: function () {
 		return {
 			errormsg: null,
 			loading: false,
@@ -12,7 +12,7 @@ export default {
 			this.loading = true;
 			this.errormsg = null;
 			try {
-				//let response = await this.$axios.get("/");
+				let response = await this.$axios.get("/");
 				this.some_data = response.data;
 			} catch (e) {
 				this.errormsg = e.toString();
@@ -53,4 +53,5 @@ export default {
 </template>
 
 <style>
+
 </style>

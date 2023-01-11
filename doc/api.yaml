@@ -63,7 +63,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserID"
+                description: Object containing the user's id
+                type: object
+                properties:
+                  UserID:
+                    $ref: "#/components/schemas/UserID"
         '400': { $ref: "#/components/responses/BadRequest" }
         '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" }
@@ -212,7 +216,6 @@ paths:
         '400': { $ref: "#/components/responses/BadRequest" }
         '401': { $ref: "#/components/responses/Unauthorized"}
         '403': { $ref: "#/components/responses/Forbidden" }
-        '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" }
   /photos/{PhotoID}:
     parameters:
@@ -360,7 +363,6 @@ paths:
                 $ref: "#/components/schemas/Stream"
         '400': { $ref: "#/components/responses/BadRequest" }
         '401': { $ref: "#/components/responses/Unauthorized"}
-        '404': { $ref: "#/components/responses/ResultNotFound" }
         '500': { $ref: "#/components/responses/InternalServerError" } 
 components:
   schemas:

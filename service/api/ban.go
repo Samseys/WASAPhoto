@@ -22,6 +22,7 @@ func (rt *_router) BanUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	if err != nil {
 		ctx.Logger.WithError(err).Error("ban: error while checking if the user exists")
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	if !exists {

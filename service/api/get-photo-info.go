@@ -23,6 +23,7 @@ func (rt *_router) GetPhotoInfo(w http.ResponseWriter, r *http.Request, ps httpr
 	if err != nil {
 		ctx.Logger.WithError(err).Error("get-photo-info: error while checking if the user exists")
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	if !exists {

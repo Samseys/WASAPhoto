@@ -22,6 +22,7 @@ func (rt *_router) UnfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 	if err != nil {
 		ctx.Logger.WithError(err).Error("unfollow: error while checking if the user exists")
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	if !exists {

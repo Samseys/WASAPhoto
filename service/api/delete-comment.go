@@ -22,6 +22,7 @@ func (rt *_router) DeleteComment(w http.ResponseWriter, r *http.Request, ps http
 	if err != nil {
 		ctx.Logger.WithError(err).Error("delete-comment: error while checking if the user exists")
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	if !exists {

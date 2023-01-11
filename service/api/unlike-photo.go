@@ -22,6 +22,7 @@ func (rt *_router) UnlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	if err != nil {
 		ctx.Logger.WithError(err).Error("unlike-photo: error while checking if the user exists")
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	if !exists {

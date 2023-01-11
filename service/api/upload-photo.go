@@ -25,6 +25,7 @@ func (rt *_router) UploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	if err != nil {
 		ctx.Logger.WithError(err).Error("upload-photo: error while checking if the user exists")
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	if !exists {
@@ -40,12 +41,6 @@ func (rt *_router) UploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	mainComment := r.FormValue("MainComment")
-
-	if mainComment == "" {
-		ctx.Logger.Error("upload-photo: empty comment")
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
 
 	file, fileheader, err := r.FormFile("UploadedPhoto")
 	if err != nil {

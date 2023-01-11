@@ -23,6 +23,7 @@ func (rt *_router) GetUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	if err != nil {
 		ctx.Logger.WithError(err).Error("get-profile: error while checking if the user exists")
 		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	if !exists {

@@ -22,6 +22,7 @@ func (rt *_router) LikePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 	if err != nil {
 		ctx.Logger.WithError(err).Error("like-photo: error while checking if the user exists")
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	if !exists {

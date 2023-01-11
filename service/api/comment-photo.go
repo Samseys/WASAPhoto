@@ -23,6 +23,7 @@ func (rt *_router) CommentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	if err != nil {
 		ctx.Logger.WithError(err).Error("comment-photo: error while checking if the user exists")
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	if !exists {
