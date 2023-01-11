@@ -91,7 +91,7 @@ export default {
 					</h6>
 					<ul class="nav flex-column">
 						<li class="nav-item">
-							<RouterLink :to="'/some/' + 'variable_here' + '/path'" class="nav-link">
+							<RouterLink to="/profile/1" class="nav-link">
 								<svg class="feather">
 									<use href="/feather-sprite-v4.29.0.svg#file-text" />
 								</svg>

@@ -18,20 +18,21 @@ export default {
             this.errormsg = null;
             this.successmsg = null
             try {
-                if (this.Username.Username != "") {
-                    await this.$axios.put("/users/" + localStorage.token + "/name", this.Username, {
+                if (this.Username.Username == "") {
+                    this.errormsg = "The username is empty."
+                } else if (this.Username.Username == localStorage.username) {
+                    this.errormsg = "You already have this name."
+                } else {
+                    await this.$axios.put("/users/" + this.token + "/name", this.Username, {
                         headers: {
-                            Authorization: 'Bearer ' + token
+                            Authorization: 'Bearer ' + this.token
                         }
                     });
-                    this.success = "Name changed successfully."
-                } else {
-                    this.errormsg = "The username is empty."
+                    this.successmsg = "Name changed successfully."
+                    localStorage.setItem("username", this.Username.Username)
                 }
             } catch (e) {
-                if (e.response && e.response.status == '401') {
-                    this.errormsg = "You have to be authenticated to change name."
-                } else if (e.response && e.response.status == '409') {
+                if (e.response && e.response.status == '409') {
                     this.errormsg = "Another user has the same username.";
                 } else if (e.response && e.response.status == '500') {
                     this.errormsg = "An internal error has occured.";
@@ -39,12 +40,6 @@ export default {
                     this.errormsg = e.toString();
                 }
             }
-            this.loading = false;
-        },
-        async logout() {
-            this.loading = true;
-            this.token = null
-            localStorage.removeItem("token")
             this.loading = false;
         }
     },
@@ -84,7 +79,7 @@ export default {
         </div>
     </div>
     <div v-else>
-        <h1>You can't do this without being authenticated!</h1>
+        <h2>You can't do this without being authenticated!</h2>
     </div>
     <LoadingSpinner :loading="loading"></LoadingSpinner>
 

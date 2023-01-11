@@ -10,6 +10,7 @@ export default {
                 MainComment: "",
                 UploadedPhoto: null
             },
+            token: null
         }
     },
     methods: {
@@ -44,12 +45,16 @@ export default {
                 }
             }
             this.loading = false;
-        },
-        async logout() {
-            this.loading = true;
-            this.token = null
-            localStorage.removeItem("token")
-            this.loading = false;
+        }
+    },
+    mounted() {
+        this.token = localStorage.token;
+    },
+    watch: {
+        token(token) {
+            if (token) {
+                localStorage.token = token;
+            }
         }
     }
 }
@@ -64,21 +69,25 @@ export default {
     <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
     <SuccessMsg v-if="successmsg" :msg="successmsg"></SuccessMsg>
 
-    <div v-if="!loading">
-        <div class="mb-3">
-            <label>
-                <label for="comment" class="form-label">Insert a comment to write with the photo</label>
-                <textarea style="resize: none; width: 100%; height: 20vh; display: block;" class="form-control"
-                    id="comment" v-model="Image.MainComment"></textarea>
-                <br>
-                <input type="file" id="photo" name="photo" accept="image/png, image/jpeg" v-on:change="onChange" />
-            </label>
+    <div v-if="token">
+        <div v-if="!loading">
+            <div class="mb-3">
+                <label>
+                    <label for="comment" class="form-label">Insert a comment to write with the photo</label>
+                    <textarea style="resize: none; width: 100%; height: 20vh; display: block;" class="form-control"
+                        id="comment" v-model="Image.MainComment"></textarea>
+                    <br>
+                    <input type="file" id="photo" name="photo" accept="image/png, image/jpeg" v-on:change="onChange" />
+                </label>
+            </div>
+
+            <button type="button" class="btn btn-sm btn-primary" @click="uploadPhoto">
+                Upload Photo
+            </button>
         </div>
-
-        <button type="button" class="btn btn-sm btn-primary" @click="uploadPhoto">
-            Upload Photo
-        </button>
-
+    </div>
+    <div v-else>
+        <h2>You can't do this without being authenticated!</h2>
     </div>
     <LoadingSpinner :loading="loading"></LoadingSpinner>
 
