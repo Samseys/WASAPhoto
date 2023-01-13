@@ -87,7 +87,13 @@ export default {
         </div>
     </div>
     <div v-else>
-        <h2>You can't do this without being authenticated!</h2>
+        <div class="card">
+            <div class="card-body">
+                <p class="card-text">
+                    You can't upload photos without being authenticated!
+                </p>
+            </div>
+        </div>
     </div>
     <LoadingSpinner :loading="loading"></LoadingSpinner>
 

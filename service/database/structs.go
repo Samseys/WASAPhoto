@@ -29,11 +29,12 @@ type Comment struct {
 }
 
 type PhotoForFrontend struct {
-	ID           uint64                `json:"PhotoID"`
-	Owner        UserProfileSimplified `json:"Owner"`
-	CreationDate time.Time             `json:"CreationDate"`
-	Comment      string                `json:"Comment"`
-	Comments     []Comment             `json:"Comments"`
+	ID           uint64                  `json:"PhotoID"`
+	Owner        UserProfileSimplified   `json:"Owner"`
+	CreationDate time.Time               `json:"CreationDate"`
+	Comment      string                  `json:"Comment"`
+	Comments     []Comment               `json:"Comments"`
+	Likes        []UserProfileSimplified `json:"Likes"`
 }
 
 type Stream struct {
@@ -42,7 +43,7 @@ type Stream struct {
 
 type UserProfile struct {
 	Username  string                  `json:"Username"`
-	Photos    []uint64                `json:"Photos"`
+	Photos    []PhotoForFrontend      `json:"Photos"`
 	Followers []UserProfileSimplified `json:"Followers"`
 	Following []UserProfileSimplified `json:"Following"`
 }

@@ -54,13 +54,11 @@ func (rt *_router) ChangeName(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	if name.Name == "" {
-		ctx.Logger.Error("change-name: name empty")
+	if !utils.CheckName(name.Name) {
+		ctx.Logger.Error("change-name: input not valid")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
-	name.Name = utils.MakeAlphaNumeric(name.Name)
 
 	err = rt.db.ChangeName(name.Name, userid)
 

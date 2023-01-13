@@ -21,13 +21,11 @@ func (rt *_router) Session(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	if name.Name == "" {
-		ctx.Logger.Error("session: empty name")
+	if !utils.CheckName(name.Name) {
+		ctx.Logger.Error("session: input not valid")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
-	name.Name = utils.MakeAlphaNumeric(name.Name)
 
 	id, err := rt.db.Login(name.Name)
 	if err != nil {

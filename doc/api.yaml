@@ -220,23 +220,6 @@ paths:
   /photos/{PhotoID}:
     parameters:
       - $ref: "#/components/parameters/PhotoID"
-    get:
-      tags: ["ManagePhotos"]
-      operationId: getPhotoInfo
-      summary: Get the photo's info
-      description : "Get the photo's info"
-      responses:
-        '200':
-          description: "Photo info retrieved successfully." 
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Photo" 
-        '400': { $ref: "#/components/responses/BadRequest" }
-        '401': { $ref: "#/components/responses/Unauthorized"}
-        '403': { $ref: "#/components/responses/Forbidden" }
-        '404': { $ref: "#/components/responses/ResultNotFound" }
-        '500': { $ref: "#/components/responses/InternalServerError" }
     delete:
       tags: ["ManagePhotos"]
       operationId: deletePhoto
@@ -380,7 +363,7 @@ components:
           minItems: 0
           maxItems: 10000
           items:
-           $ref: "#/components/schemas/PhotoID"
+           $ref: "#/components/schemas/Photo"
         Followers:
           description: "Array of the users following the requester"
           type: array
@@ -446,6 +429,13 @@ components:
           maxItems: 100000
           items:
             $ref: "#/components/schemas/Comment"
+        Likes:
+          type: array
+          description: "Array containing the users that liked the photo"
+          minItems: 0
+          maxItems: 100000
+          items:
+            $ref: "#/components/schemas/UserProfileSimplified"
     Comment:
       type: object
       description: Object containing the comment data

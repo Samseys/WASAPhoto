@@ -41,5 +41,23 @@ func (db *appdbimpl) GetPhotoInfoForFrontend(photoID uint64) (PhotoForFrontend, 
 
 	rows.Close()
 
+	rows, err = db.c.Query("SELECT Users.name, Likes.userid FROM Likes INNER JOIN Users on Likes.userid = Users.id WHERE photoid = ?", photoID)
+	if err != nil {
+		return photo, err
+	}
+
+	for rows.Next() {
+		var profile UserProfileSimplified
+		err = rows.Scan(&profile.Username, &profile.ID)
+		if err != nil {
+			return photo, err
+		}
+		photo.Likes = append(photo.Likes, profile)
+	}
+
+	if err = rows.Err(); err != nil {
+		return photo, err
+	}
+
 	return photo, nil
 }

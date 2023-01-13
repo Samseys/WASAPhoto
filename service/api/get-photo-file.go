@@ -75,5 +75,10 @@ func (rt *_router) GetPhotoFile(w http.ResponseWriter, r *http.Request, ps httpr
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("content-type", "image/"+strings.ReplaceAll(photoInfo.Extension, ".", ""))
-	w.Write(photo)
+	_, err = w.Write(photo)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("get-photo-file: error while writing the image into the response")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 }
