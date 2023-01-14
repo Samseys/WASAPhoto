@@ -248,8 +248,24 @@ export default {
                     <div class="card-header">User Info</div>
                     <div class="card-body">
                         <p class="card-text">Number of uploaded photos: {{ (this.profile.Photos ?? []).length }}</p>
-                        <p class="card-text">Followed: {{ this.profile.Following ?? [] }}</p>
-                        <p class="card-text">Followers: {{ this.profile.Followers ?? [] }}</p>
+                        <p class="card-text">
+                            Following: <span v-for="(followed, index) in (this.profile.Following ?? [])"
+                                :key="followed.UserID">
+                                <RouterLink :to="'/profile/' + followed.UserID">
+                                    {{ followed.Username }}
+                                </RouterLink>
+                                <span v-if="index != Object.keys(this.profile.Following ?? []).length - 1">, </span>
+                            </span>
+                        </p>
+                        <p class="card-text">
+                            Followers: <span v-for="(follower, index) in (this.profile.Followers ?? [])"
+                                :key="follower.UserID">
+                                <RouterLink :to="'/profile/' + follower.UserID">
+                                    {{ follower.Username }}
+                                </RouterLink>
+                                <span v-if="index != Object.keys(this.profile.Followers ?? []).length - 1">, </span>
+                            </span>
+                        </p>
                     </div>
                 </div>
                 <Photo :photo=photo v-for="photo in (this.profile.Photos ?? [])" :key="photo.PhotoID"
