@@ -54,16 +54,16 @@ export default {
 </script>
 
 <template>
-    <div
-        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Upload Photo</h1>
-    </div>
+    <div v-if="!loading">
+        <div
+            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">Upload Photo</h1>
+        </div>
 
-    <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
-    <SuccessMsg v-if="successmsg" :msg="successmsg"></SuccessMsg>
+        <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
+        <SuccessMsg v-if="successmsg" :msg="successmsg"></SuccessMsg>
 
-    <div v-if="token">
-        <div v-if="!loading">
+        <div v-if="token">
             <div class="mb-3">
                 <label>
                     <label for="comment" class="form-label">Insert a comment to write with the photo</label>
@@ -77,13 +77,13 @@ export default {
                 Upload Photo
             </button>
         </div>
-    </div>
-    <div v-else>
-        <div class="card">
-            <div class="card-body">
-                <p class="card-text">
-                    You can't upload photos without being authenticated!
-                </p>
+        <div v-else>
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-text">
+                        You can't upload photos without being authenticated!
+                    </p>
+                </div>
             </div>
         </div>
     </div>

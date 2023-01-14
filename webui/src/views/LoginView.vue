@@ -59,7 +59,7 @@ export default {
 </script>
 
 <template>
-    <div>
+    <div v-if="!loading">
         <div
             class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
             <div v-if="token">
@@ -71,28 +71,26 @@ export default {
         </div>
         <SuccessMsg v-if="successmsg" :msg="successmsg"></SuccessMsg>
         <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
-        <div v-if="!loading">
-            <div v-if="!token">
-                <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" v-model="loginInfo.Username" />
-                </div>
-            </div>
-
-            <div v-if="token">
-                <button type="button" class="btn btn-sm btn-primary" @click="logout">
-                    Logout
-                </button>
-            </div>
-            <div v-else>
-                <button type="button" class="btn btn-sm btn-primary" @click="login">
-                    Login
-                </button>
+        <div v-if="!token">
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" v-model="loginInfo.Username" />
             </div>
         </div>
 
-        <LoadingSpinner :loading="loading"></LoadingSpinner>
+        <div v-if="token">
+            <button type="button" class="btn btn-sm btn-primary" @click="logout">
+                Logout
+            </button>
+        </div>
+        <div v-else>
+            <button type="button" class="btn btn-sm btn-primary" @click="login">
+                Login
+            </button>
+        </div>
     </div>
+
+    <LoadingSpinner :loading="loading"></LoadingSpinner>
 </template>
 
 <style>

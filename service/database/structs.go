@@ -42,10 +42,13 @@ type Stream struct {
 }
 
 type UserProfile struct {
+	ID        uint64                  `json:"UserID"`
 	Username  string                  `json:"Username"`
 	Photos    []PhotoForFrontend      `json:"Photos"`
 	Followers []UserProfileSimplified `json:"Followers"`
 	Following []UserProfileSimplified `json:"Following"`
+	Banned    []UserProfileSimplified `json:"Banned"`
+	BannedBy  []UserProfileSimplified `json:"BannedBy"`
 }
 
 type UserProfileSimplified struct {

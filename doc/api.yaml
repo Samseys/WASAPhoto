@@ -365,14 +365,28 @@ components:
           items:
            $ref: "#/components/schemas/Photo"
         Followers:
-          description: "Array of the users following the requester"
+          description: "Array of the users following the profile"
           type: array
           minItems: 0
           maxItems: 10000
           items:
             $ref: "#/components/schemas/UserProfileSimplified"
         Following:
-          description: "Array of the users followed by the requester"
+          description: "Array of the users followed by the profile"
+          type: array
+          minItems: 0
+          maxItems: 10000
+          items:
+            $ref: "#/components/schemas/UserProfileSimplified"
+        Banned:
+          description: "Array of the users banned by the profile"
+          type: array
+          minItems: 0
+          maxItems: 10000
+          items:
+            $ref: "#/components/schemas/UserProfileSimplified"
+        BannedBy:
+          description: "Array of the users that banned the profile"
           type: array
           minItems: 0
           maxItems: 10000

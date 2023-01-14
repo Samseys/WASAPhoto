@@ -1,13 +1,57 @@
 <script>
+import Photo from '../components/Photo.vue'
 export default {
+    components: {
+        Photo
+    },
     data: function () {
         return {
             errormsg: null,
             successmsg: null,
             loading: false,
-            profile: [],
+            profile: {
+                UserID: Number,
+                Username: String,
+                Photos: [{
+                    PhotoID: Number,
+                    Owner: {
+                        UserID: Number,
+                        Username: String
+                    },
+                    CreationDate: String,
+                    Comment: String,
+                    Comments: [{
+                        CommentID: Number,
+                        Comment: String,
+                        Owner: {
+                            UserID: Number,
+                            Username: String
+                        },
+                        CreationDate: String
+                    }],
+                    Likes: [{
+                        UserID: Number,
+                        Username: String
+                    }],
+                }],
+                Followers: [{
+                    UserID: Number,
+                    Username: String
+                }],
+                Following: [{
+                    UserID: Number,
+                    Username: String
+                }],
+                Banned: [{
+                    UserID: Number,
+                    Username: String
+                }],
+                BannedBy: [{
+                    UserID: Number,
+                    Username: String
+                }],
+            },
             photos: [],
-            comments: [],
             profileID: null,
             found: false,
             token: null
@@ -17,14 +61,9 @@ export default {
         load() {
             return load
         },
-        async getImage(id) {
-            let response = await this.$axios.get("/photos/" + id + "/file", {
-                headers: {
-                    Authorization: 'Bearer ' + this.token
-                }, responseType: 'blob'
-            });
-            return response.data;
-
+        deletePhoto(photo) {
+            this.profile.Photos.splice(this.profile.Photos.findIndex(item => item.PhotoID == photo.PhotoID), 1)
+            this.successmsg = "Photo deleted."
         },
         async refresh() {
             if (!this.token)
@@ -43,13 +82,6 @@ export default {
                         }
                     });
                     this.profile = response.data;
-                    if (this.profile.Photos != null) {
-                        for (const p of this.profile.Photos) {
-                            var blob = await this.getImage(p.PhotoID)
-                            this.photos[p.PhotoID] = window.URL.createObjectURL(blob)
-                            this.comments[p.PhotoID] = " "
-                        }
-                    }
                     this.found = true;
                 }
             } catch (e) {
@@ -65,30 +97,24 @@ export default {
             }
             this.loading = false;
         },
-        getLikeQty(p) {
-            if (p.Likes != null) {
-                return p.Likes.length;
-            } else {
-                return 0;
-            }
-        },
-        async like(p) {
+        async follow() {
             this.errormsg = ""
             try {
-                await this.$axios.put("/photos/" + p.PhotoID + "/likes/" + this.token, "", {
+                await this.$axios.put("/users/" + this.token + "/followed/" + this.profile.UserID, "", {
                     headers: {
                         Authorization: 'Bearer ' + this.token
                     }
                 });
-                if (p.Likes == null) {
-                    p.Likes = []
+                if (this.profile.Followers == null) {
+                    this.profile.Followers = [];
                 }
-                p.Likes.push({ "UserID": this.token, "Username": localStorage.getItem("Username") })
+
+                this.profile.Followers.push({ "UserID": this.token, "Username": localStorage.getItem("Username") })
             } catch (e) {
                 if (e.response && e.response.status == '403') {
-                    this.errormsg = "The owner of this profile banned you.";
-                } if (e.response && e.response.status == '404') {
-                    this.errormsg = "There is no photo with this id: " + p.PhotoID + ".";
+                    this.errormsg = "The owner of this profile banned you";
+                } else if (e.response && e.response.status == '404') {
+                    this.errormsg = "There is no user with this id: " + this.profile.UserID + ".";
                 } else if (e.response && e.response.status == '500') {
                     this.errormsg = "An internal error has occured.";
                 } else {
@@ -96,20 +122,20 @@ export default {
                 }
             }
         },
-        async unlike(p) {
+        async unfollow() {
             this.errormsg = ""
             try {
-                await this.$axios.delete("/photos/" + p.PhotoID + "/likes/" + this.token, {
+                await this.$axios.delete("/users/" + this.token + "/followed/" + this.profile.UserID, {
                     headers: {
                         Authorization: 'Bearer ' + this.token
                     }
                 });
-                p.Likes.splice(p.Likes.findIndex(item => item.UserID == this.token), 1)
+                this.profile.Followers.splice(this.profile.Followers.findIndex(item => item.UserID == this.token), 1)
             } catch (e) {
                 if (e.response && e.response.status == '403') {
                     this.errormsg = "The owner of this profile banned you.";
                 } if (e.response && e.response.status == '404') {
-                    this.errormsg = "There is no photo with this id: " + p.PhotoID + ".";
+                    this.errormsg = "There is no user with this id: " + this.profile.UserID + ".";
                 } else if (e.response && e.response.status == '500') {
                     this.errormsg = "An internal error has occured.";
                 } else {
@@ -117,46 +143,23 @@ export default {
                 }
             }
         },
-        async deletePhoto(p) {
-            try {
-                var response = await this.$axios.delete("/photos/" + p.PhotoID, {
-                    headers: {
-                        Authorization: 'Bearer ' + this.token
-                    }
-                });
-                this.profile.Photos.splice(this.profile.Photos.findIndex(item => item.PhotoID == p.PhotoID), 1)
-            } catch (e) {
-                if (e.response && e.response.status == '403') {
-                    this.errormsg = "The owner of this profile banned you.";
-                } if (e.response && e.response.status == '404') {
-                    this.errormsg = "There is no photo with this id or the comment doesn't exist.";
-                } else if (e.response && e.response.status == '500') {
-                    this.errormsg = "An internal error has occured.";
-                } else {
-                    this.errormsg = e.toString();
-                }
-            }
-        },
-        async postComment(p) {
+        async ban() {
             this.errormsg = ""
-            if (this.comments[p.PhotoID] == null || this.comments[p.PhotoID] == "") {
-                this.errormsg = "You can't post an empty comment";
-            }
             try {
-                var response = await this.$axios.post("/photos/" + p.PhotoID + "/comments", { Comment: this.comments[p.PhotoID] }, {
+                await this.$axios.put("/users/" + this.token + "/banned/" + this.profile.UserID, "", {
                     headers: {
                         Authorization: 'Bearer ' + this.token
                     }
                 });
-                if (p.Comments == null) {
-                    p.Comments = []
+
+                if (this.profile.BannedBy == null) {
+                    this.profile.BannedBy = [];
                 }
-                p.Comments.push(response.data);
+
+                this.profile.BannedBy.push({ "UserID": this.token, "Username": localStorage.getItem("Username") })
             } catch (e) {
-                if (e.response && e.response.status == '403') {
-                    this.errormsg = "The owner of this profile banned you.";
-                } if (e.response && e.response.status == '404') {
-                    this.errormsg = "There is no photo with this id: " + p.PhotoID + ".";
+                if (e.response && e.response.status == '404') {
+                    this.errormsg = "There is no user with this id: " + this.profile.UserID + ".";
                 } else if (e.response && e.response.status == '500') {
                     this.errormsg = "An internal error has occured.";
                 } else {
@@ -164,19 +167,20 @@ export default {
                 }
             }
         },
-        async deleteComment(p, c) {
+        async unban() {
+            this.errormsg = ""
             try {
-                var response = await this.$axios.delete("/photos/" + p.PhotoID + "/comments/" + c.CommentID, {
+                await this.$axios.delete("/users/" + this.token + "/banned/" + this.profile.UserID, {
                     headers: {
                         Authorization: 'Bearer ' + this.token
                     }
                 });
-                p.Comments.splice(p.Comments.findIndex(item => item.CommentID == c.CommentID), 1)
+                this.profile.BannedBy.splice(this.profile.BannedBy.findIndex(item => item.UserID == this.token), 1)
             } catch (e) {
                 if (e.response && e.response.status == '403') {
                     this.errormsg = "The owner of this profile banned you.";
                 } if (e.response && e.response.status == '404') {
-                    this.errormsg = "There is no photo with this id or the comment doesn't exist.";
+                    this.errormsg = "There is no user with this id: " + this.profile.UserID + ".";
                 } else if (e.response && e.response.status == '500') {
                     this.errormsg = "An internal error has occured.";
                 } else {
@@ -204,105 +208,61 @@ export default {
 }
 </script>
 <template>
-    <div
-        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">User Profile</h1>
-        <div class="btn-toolbar mb-2 mb-md-0">
-            <div class="btn-group me-2">
-                <button type="button" class="btn btn-sm btn-outline-primary" @click="refresh">
-                    Refresh
-                </button>
-            </div>
-        </div>
-    </div>
-    <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
-    <SuccessMsg v-if="successmsg" :msg="successmsg"></SuccessMsg>
-
-    <div v-if="token">
-        <div v-if="found && !loading">
-            <div v-if="this.profile.Photos && this.profile.Photos.length != 0">
-                <div class="card" v-for="p in this.profile.Photos" :key="p.PhotoID">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+    <div v-if="!loading">
+        <div
+            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">{{ this.profile.Username }}</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group me-2">
+                    <span v-if="this.profile.UserID != this.token">
                         <span>
-                            <RouterLink :to="'/profile/' + p.Owner.UserID">
-                                {{ p.Owner.Username }}
-                            </RouterLink>
-                            - {{ p.CreationDate }}
+                            <button type="button" class="btn btn-sm btn-outline-primary" @click="unfollow"
+                                v-if="this.profile.Followers != null && this.profile.Followers.some(follower => follower.UserID == this.token)">
+                                Unfollow
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary" @click="follow" v-else>
+                                Follow
+                            </button>
                         </span>
-                        <button type="button" class="btn btn-danger" v-if="p.Owner.UserID == this.token"
-                            @click="deletePhoto(p)">
-                            Delete photo
-                        </button>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text" v-if="p.Comment">
-                            {{ p.Comment }}<br />
-                            <br />
-                        </p>
-                        <img :src="this.photos[p.PhotoID]" />
-                        <br />
-                        <p class="card-text">
-                            Likes: {{ getLikeQty(p) }}<br /><br />
-                        </p>
-
-                        <div class="btn-toolbar">
-                            <button type="button" class="btn btn-danger" @click="unlike(p)"
-                                v-if="p.Likes != null && p.Likes.some(like => like.UserID == this.token)">
-                                Unlike
+                        <span>
+                            <button type="button" class="btn btn-sm btn-outline-primary" @click="unban"
+                                v-if="this.profile.BannedBy != null && this.profile.BannedBy.some(bannedby => bannedby.UserID == this.token)">
+                                Unban
                             </button>
-
-                            <button type="button" class="btn btn-primary" @click="like(p)" v-else>
-                                Like
+                            <button type="button" class="btn btn-sm btn-outline-primary" @click="ban" v-else>
+                                Ban
                             </button>
-                        </div>
-                        <br />
-                        <div class="card">
-                            <div class="card-header">Comment Section</div>
-                            <div class="card-body">
-                                <div class="card" v-for="c in p.Comments" :key="c.CommentID">
-                                    <div class="card-header d-flex justify-content-between align-items-center">
-                                        <span>
-                                            <RouterLink :to="'/profile/' + c.Owner.UserID">
-                                                {{ c.Owner.Username }}
-                                            </RouterLink>
-                                            - {{ c.CreationDate }}
-                                        </span>
-                                        <button type="button" class="btn btn-danger small" @click="deleteComment(p, c)"
-                                            v-if="c.Owner.UserID == this.token">
-                                            Delete comment
-                                        </button>
-                                    </div>
-                                    <div class="card-body">
-                                        {{ c.Comment }}
-                                    </div>
-                                </div>
-                                <div class="card">
-                                    <div class="card-header">Post a comment</div>
-                                    <div class="card-body d-flex justify-content-between align-items-center">
-                                        <textarea v-model="this.comments[p.PhotoID]"></textarea><br />
-
-                                        <button type="button" class="btn btn-primary" @click="postComment(p)">
-                                            Comment
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card" v-else>
-                <div class="card-body">
-                    <p class="card-text">This user hasn't uploaded any photo yet.</p>
+                        </span>
+                    </span>
+                    <button type="button" class="btn btn-sm btn-outline-primary" @click="refresh">
+                        Refresh
+                    </button>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="card" v-else>
-        <div class="card-body">
-            <p class="card-text">
-                You can't access profiles without being authenticated!
-            </p>
+        <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
+        <SuccessMsg v-if="successmsg" :msg="successmsg"></SuccessMsg>
+
+        <div v-if="token">
+            <div v-if="found">
+                <div v-if="this.profile.Photos && this.profile.Photos.length != 0">
+                    <Photo :photo=photo v-for="photo in this.profile.Photos" :key="photo.PhotoID"
+                        @delete-photo="deletePhoto(photo)"></Photo>
+                </div>
+                <div class="card" v-else>
+                    <div class="card-body">
+                        <p class="card-text">This user hasn't uploaded any photo yet.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="card" v-else>
+            <div class="card-body">
+                <p class="card-text">
+                    You can't access profiles without being authenticated!
+                </p>
+            </div>
         </div>
     </div>
     <LoadingSpinner :loading="loading"></LoadingSpinner>
@@ -310,19 +270,5 @@ export default {
 <style scoped>
 .card {
     margin-bottom: 20px;
-}
-
-img {
-    display: block;
-    max-height: 300px;
-    width: auto;
-    height: auto;
-}
-
-textarea {
-    resize: none;
-    width: 50%;
-    height: 15vh;
-    display: block;
 }
 </style>
