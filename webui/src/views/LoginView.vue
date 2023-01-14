@@ -41,12 +41,14 @@ export default {
             this.token = null;
             localStorage.removeItem("token");
             localStorage.removeItem("username");
+            this.loginInfo.Username = ""
             this.successmsg = "Logged out successfully.";
             this.loading = false;
         }
     },
     mounted() {
         this.token = localStorage.token;
+        this.loginInfo.Username = localStorage.username;
     },
     watch: {
         token(token) {
@@ -77,6 +79,17 @@ export default {
                 <input type="text" class="form-control" id="username" v-model="loginInfo.Username" />
             </div>
         </div>
+        <div v-else>
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-text">
+                        Username: {{ this.loginInfo.Username }}<br />
+                        ID: {{ this.token }}
+
+                    </p>
+                </div>
+            </div>
+        </div>
 
         <div v-if="token">
             <button type="button" class="btn btn-sm btn-primary" @click="logout">
@@ -94,5 +107,7 @@ export default {
 </template>
 
 <style>
-
+.card {
+    margin-bottom: 20px;
+}
 </style>

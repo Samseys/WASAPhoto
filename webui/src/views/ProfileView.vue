@@ -8,6 +8,7 @@ export default {
         return {
             errormsg: null,
             successmsg: null,
+            header: "User Profile",
             loading: false,
             profile: {
                 UserID: Number,
@@ -70,8 +71,9 @@ export default {
                 return;
             this.loading = true;
             this.errormsg = null;
-            this.successmsg = null
+            this.successmsg = null;
             this.found = false;
+            this.header = "User Profile";
             try {
                 if (!this.profileID) {
                     this.errormsg = "The profile ID is empty"
@@ -82,12 +84,13 @@ export default {
                         }
                     });
                     this.profile = response.data;
+                    this.header = this.profile.Username;
                     this.found = true;
                 }
             } catch (e) {
                 if (e.response && e.response.status == '403') {
                     this.errormsg = "The owner of this profile banned you.";
-                } if (e.response && e.response.status == '404') {
+                } else if (e.response && e.response.status == '404') {
                     this.errormsg = "There is no user with this User ID " + this.profileID + ".";
                 } else if (e.response && e.response.status == '500') {
                     this.errormsg = "An internal error has occured.";
@@ -211,7 +214,7 @@ export default {
     <div v-if="!loading">
         <div
             class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <h1 class="h2">{{ this.profile.Username }}</h1>
+            <h1 class="h2">{{ this.header }}</h1>
             <div class="btn-toolbar mb-2 mb-md-0">
                 <div class="btn-group me-2">
                     <span v-if="this.profile.UserID != this.token">
