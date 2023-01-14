@@ -25,7 +25,7 @@ export default {
                 if (this.Image.UploadedPhoto != null) {
                     await this.$axios.post("/photos", this.Image, {
                         headers: {
-                            'Authorization': 'Bearer ' + localStorage.getItem("token"),
+                            'Authorization': 'Bearer ' + localStorage.token,
                             'Content-Type': 'multipart/form-data'
                         }
                     });

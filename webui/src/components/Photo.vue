@@ -46,13 +46,6 @@ export default {
             this.photoFile = window.URL.createObjectURL(response.data);
             this.loading = false;
         },
-        getLikeQty() {
-            if (this.photo.Likes != null) {
-                return this.photo.Likes.length;
-            } else {
-                return 0;
-            }
-        },
         async deletePhoto() {
             try {
                 await this.$axios.delete("/photos/" + this.photo.PhotoID, {
@@ -84,7 +77,7 @@ export default {
                 if (this.photo.Likes == null) {
                     this.photo.Likes = []
                 }
-                this.photo.Likes.push({ "UserID": this.token, "Username": localStorage.getItem("Username") })
+                this.photo.Likes.push({ "UserID": this.token, "Username": localStorage.username })
             } catch (e) {
                 if (e.response && e.response.status == '403') {
                     this.errormsg = "The owner of this profile banned you.";
@@ -198,12 +191,12 @@ export default {
                 <img :src="this.photoFile" />
                 <br />
                 <p class="card-text">
-                    Likes: {{ getLikeQty() }}
+                    Likes: {{ (this.photo.Likes ?? []).length }}
                 </p>
 
                 <div class="btn-toolbar">
                     <button type="button" class="btn btn-danger" @click="unlike()"
-                        v-if="this.photo.Likes != null && this.photo.Likes.some(like => like.UserID == this.token)">
+                        v-if="(this.photo.Likes ?? []).some(like => like.UserID == this.token)">
                         Unlike
                     </button>
 

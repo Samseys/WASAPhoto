@@ -12,7 +12,7 @@ export default {
 	methods: {
 		async checkLogged() {
 			try {
-				let username = localStorage.getItem("username");
+				let username = localStorage.username;
 				if (username != null) {
 					let response = await this.$axios.get("/userids/" + username);
 					let responseID = response.data.UserID;
@@ -36,7 +36,7 @@ export default {
 </script>
 
 <template>
-	<div v-if="this.loaded">
+	<div v-if="loaded">
 		<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
 			<a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#/">WASA Photos</a>
 			<button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse"

@@ -10,6 +10,7 @@ export default {
             successmsg: null,
             header: "User Profile",
             loading: false,
+            banned: false,
             profile: {
                 UserID: Number,
                 Username: String,
@@ -52,10 +53,9 @@ export default {
                     Username: String
                 }],
             },
-            photos: [],
             profileID: null,
             found: false,
-            token: null
+            token: null,
         }
     },
     methods: {
@@ -74,6 +74,7 @@ export default {
             this.successmsg = null;
             this.found = false;
             this.header = "User Profile";
+            this.banned = false;
             try {
                 if (!this.profileID) {
                     this.errormsg = "The profile ID is empty"
@@ -90,6 +91,7 @@ export default {
             } catch (e) {
                 if (e.response && e.response.status == '403') {
                     this.errormsg = "The owner of this profile banned you.";
+                    this.banned = true;
                 } else if (e.response && e.response.status == '404') {
                     this.errormsg = "There is no user with this User ID " + this.profileID + ".";
                 } else if (e.response && e.response.status == '500') {
@@ -108,15 +110,13 @@ export default {
                         Authorization: 'Bearer ' + this.token
                     }
                 });
-                if (this.profile.Followers == null) {
+                if (!this.profile.Followers) {
                     this.profile.Followers = [];
                 }
 
-                this.profile.Followers.push({ "UserID": this.token, "Username": localStorage.getItem("Username") })
+                this.profile.Followers.push({ "UserID": this.token, "Username": localStorage.username })
             } catch (e) {
-                if (e.response && e.response.status == '403') {
-                    this.errormsg = "The owner of this profile banned you";
-                } else if (e.response && e.response.status == '404') {
+                if (e.response && e.response.status == '404') {
                     this.errormsg = "There is no user with this id: " + this.profile.UserID + ".";
                 } else if (e.response && e.response.status == '500') {
                     this.errormsg = "An internal error has occured.";
@@ -135,9 +135,7 @@ export default {
                 });
                 this.profile.Followers.splice(this.profile.Followers.findIndex(item => item.UserID == this.token), 1)
             } catch (e) {
-                if (e.response && e.response.status == '403') {
-                    this.errormsg = "The owner of this profile banned you.";
-                } if (e.response && e.response.status == '404') {
+                if (e.response && e.response.status == '404') {
                     this.errormsg = "There is no user with this id: " + this.profile.UserID + ".";
                 } else if (e.response && e.response.status == '500') {
                     this.errormsg = "An internal error has occured.";
@@ -155,11 +153,11 @@ export default {
                     }
                 });
 
-                if (this.profile.BannedBy == null) {
+                if (!this.profile.BannedBy) {
                     this.profile.BannedBy = [];
                 }
 
-                this.profile.BannedBy.push({ "UserID": this.token, "Username": localStorage.getItem("Username") })
+                this.profile.BannedBy.push({ "UserID": this.token, "Username": localStorage.username })
             } catch (e) {
                 if (e.response && e.response.status == '404') {
                     this.errormsg = "There is no user with this id: " + this.profile.UserID + ".";
@@ -180,9 +178,7 @@ export default {
                 });
                 this.profile.BannedBy.splice(this.profile.BannedBy.findIndex(item => item.UserID == this.token), 1)
             } catch (e) {
-                if (e.response && e.response.status == '403') {
-                    this.errormsg = "The owner of this profile banned you.";
-                } if (e.response && e.response.status == '404') {
+                if (e.response && e.response.status == '404') {
                     this.errormsg = "There is no user with this id: " + this.profile.UserID + ".";
                 } else if (e.response && e.response.status == '500') {
                     this.errormsg = "An internal error has occured.";
@@ -217,10 +213,10 @@ export default {
             <h1 class="h2">{{ this.header }}</h1>
             <div class="btn-toolbar mb-2 mb-md-0">
                 <div class="btn-group me-2">
-                    <span v-if="this.profile.UserID != this.token">
+                    <span v-if="this.token && !this.banned && this.profile.UserID != this.token">
                         <span>
                             <button type="button" class="btn btn-sm btn-outline-primary" @click="unfollow"
-                                v-if="this.profile.Followers != null && this.profile.Followers.some(follower => follower.UserID == this.token)">
+                                v-if="(this.profile.Followers ?? []).some(follower => follower.UserID == this.token)">
                                 Unfollow
                             </button>
                             <button type="button" class="btn btn-sm btn-outline-primary" @click="follow" v-else>
@@ -229,7 +225,7 @@ export default {
                         </span>
                         <span>
                             <button type="button" class="btn btn-sm btn-outline-primary" @click="unban"
-                                v-if="this.profile.BannedBy != null && this.profile.BannedBy.some(bannedby => bannedby.UserID == this.token)">
+                                v-if="(this.profile.BannedBy ?? []).some(bannedby => bannedby.UserID == this.token)">
                                 Unban
                             </button>
                             <button type="button" class="btn btn-sm btn-outline-primary" @click="ban" v-else>
@@ -248,15 +244,16 @@ export default {
 
         <div v-if="token">
             <div v-if="found">
-                <div v-if="this.profile.Photos && this.profile.Photos.length != 0">
-                    <Photo :photo=photo v-for="photo in this.profile.Photos" :key="photo.PhotoID"
-                        @delete-photo="deletePhoto(photo)"></Photo>
-                </div>
-                <div class="card" v-else>
+                <div class="card">
+                    <div class="card-header">User Info</div>
                     <div class="card-body">
-                        <p class="card-text">This user hasn't uploaded any photo yet.</p>
+                        <p class="card-text">Number of uploaded photos: {{ (this.profile.Photos ?? []).length }}</p>
+                        <p class="card-text">Followed: {{ this.profile.Following ?? [] }}</p>
+                        <p class="card-text">Followers: {{ this.profile.Followers ?? [] }}</p>
                     </div>
                 </div>
+                <Photo :photo=photo v-for="photo in (this.profile.Photos ?? [])" :key="photo.PhotoID"
+                    @delete-photo="deletePhoto(photo)"></Photo>
             </div>
 
         </div>
