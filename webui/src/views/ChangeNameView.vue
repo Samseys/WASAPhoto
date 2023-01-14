@@ -1,6 +1,5 @@
 <script>
 export default {
-    components: {},
     data: function () {
         return {
             errormsg: null,

@@ -189,16 +189,27 @@ export default {
         }
     },
     mounted() {
-        this.profileID = this.$route.params.id;
+        if (this.$route.params.id == "me") {
+            this.profileID = localStorage.token;
+        } else {
+            this.profileID = this.$route.params.id;
+        }
         this.token = localStorage.token;
         this.refresh();
     },
     created() {
         this.$watch(
             () => this.$route.params,
-            (toParams, previousParams) => {
-                if (toParams.id != previousParams.id) {
-                    this.profileID = toParams.id;
+            (toParams) => {
+                var id;
+                if (toParams.id == "me") {
+                    id = localStorage.token;
+                } else {
+                    id = toParams.id;
+                }
+
+                if (id != this.profileID) {
+                    this.profileID = id;
                     this.refresh();
                 }
             }

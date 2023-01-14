@@ -4,6 +4,7 @@ import LoginView from '../views/LoginView.vue'
 import ChangeNameView from '../views/ChangeNameView.vue'
 import PhotoUploadView from '../views/PhotoUploadView.vue'
 import ProfileView from '../views/ProfileView.vue'
+import SearchView from '../views/SearchView.vue'
 
 const router = createRouter({
 	history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -13,6 +14,7 @@ const router = createRouter({
 		{ path: '/profile/changename', component: ChangeNameView },
 		{ path: '/photos/upload', component: PhotoUploadView },
 		{ path: '/profile/:id', component: ProfileView },
+		{ path: '/search', component: SearchView }
 	]
 })
 

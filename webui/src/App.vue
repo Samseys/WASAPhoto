@@ -94,11 +94,11 @@ export default {
 						</h6>
 						<ul class="nav flex-column">
 							<li class="nav-item">
-								<RouterLink to="/profile/1" class="nav-link">
+								<RouterLink to="/profile/me" class="nav-link">
 									<svg class="feather">
 										<use href="/feather-sprite-v4.29.0.svg#file-text" />
 									</svg>
-									Item 1
+									My Profile
 								</RouterLink>
 							</li>
 						</ul>
