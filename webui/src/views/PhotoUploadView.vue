@@ -68,7 +68,7 @@ export default {
                 <label>
                     <label for="comment" class="form-label">Insert a comment to write with the photo</label>
                     <textarea class="form-control" id="comment" v-model="Image.MainComment"></textarea>
-                    <br>
+                    <br />
                     <input type="file" id="photo" name="photo" accept="image/png, image/jpeg" v-on:change="onChange" />
                 </label>
             </div>
@@ -88,7 +88,6 @@ export default {
         </div>
     </div>
     <LoadingSpinner :loading="loading"></LoadingSpinner>
-
 </template>
 
 <style>

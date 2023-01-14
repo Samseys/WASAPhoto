@@ -221,7 +221,7 @@ export default {
     <div v-if="token">
         <div v-if="found && !loading">
             <div v-if="this.profile.Photos && this.profile.Photos.length != 0">
-                <div class="card" v-for="p in this.profile.Photos">
+                <div class="card" v-for="p in this.profile.Photos" :key="p.PhotoID">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <span>
                             <RouterLink :to="'/profile/' + p.Owner.UserID">
@@ -230,32 +230,36 @@ export default {
                             - {{ p.CreationDate }}
                         </span>
                         <button type="button" class="btn btn-danger" v-if="p.Owner.UserID == this.token"
-                            @click="deletePhoto(p)">Delete
-                            photo</button>
+                            @click="deletePhoto(p)">
+                            Delete photo
+                        </button>
                     </div>
                     <div class="card-body">
+                        <p class="card-text" v-if="p.Comment">
+                            {{ p.Comment }}<br />
+                            <br />
+                        </p>
+                        <img :src="this.photos[p.PhotoID]" />
+                        <br />
                         <p class="card-text">
-                        <div v-if=p.Comment>
-                            {{ p.Comment }}<br /> <br />
-                        </div>
+                            Likes: {{ getLikeQty(p) }}<br /><br />
                         </p>
 
-                        <img :src=this.photos[p.PhotoID]>
-                        <br />
-                        Likes: {{ getLikeQty(p) }}<br /><br />
                         <div class="btn-toolbar">
                             <button type="button" class="btn btn-danger" @click="unlike(p)"
-                                v-if="p.Likes != null && p.Likes.some(like => like.UserID == this.token)">Unlike</button>
+                                v-if="p.Likes != null && p.Likes.some(like => like.UserID == this.token)">
+                                Unlike
+                            </button>
 
-                            <button type="button" class="btn btn-primary" @click="like(p)" v-else>Like</button>
+                            <button type="button" class="btn btn-primary" @click="like(p)" v-else>
+                                Like
+                            </button>
                         </div>
                         <br />
                         <div class="card">
-                            <div class="card-header">
-                                Comment Section
-                            </div>
+                            <div class="card-header">Comment Section</div>
                             <div class="card-body">
-                                <div class="card" v-for="c in p.Comments">
+                                <div class="card" v-for="c in p.Comments" :key="c.CommentID">
                                     <div class="card-header d-flex justify-content-between align-items-center">
                                         <span>
                                             <RouterLink :to="'/profile/' + c.Owner.UserID">
@@ -264,23 +268,22 @@ export default {
                                             - {{ c.CreationDate }}
                                         </span>
                                         <button type="button" class="btn btn-danger small" @click="deleteComment(p, c)"
-                                            v-if="c.Owner.UserID == this.token">Delete
-                                            comment</button>
-
+                                            v-if="c.Owner.UserID == this.token">
+                                            Delete comment
+                                        </button>
                                     </div>
                                     <div class="card-body">
                                         {{ c.Comment }}
                                     </div>
                                 </div>
                                 <div class="card">
-                                    <div class="card-header">
-                                        Post a comment
-                                    </div>
+                                    <div class="card-header">Post a comment</div>
                                     <div class="card-body d-flex justify-content-between align-items-center">
                                         <textarea v-model="this.comments[p.PhotoID]"></textarea><br />
 
-                                        <button type="button" class="btn btn-primary"
-                                            @click="postComment(p)">Comment</button>
+                                        <button type="button" class="btn btn-primary" @click="postComment(p)">
+                                            Comment
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -288,24 +291,18 @@ export default {
                     </div>
                 </div>
             </div>
-            <div v-else>
-                <div class=" card">
-                    <div class="card-body">
-                        <p class="card-text">
-                            This user hasn't uploaded any photo yet.
-                        </p>
-                    </div>
+            <div class="card" v-else>
+                <div class="card-body">
+                    <p class="card-text">This user hasn't uploaded any photo yet.</p>
                 </div>
             </div>
         </div>
     </div>
-    <div v-else>
-        <div class="card">
-            <div class="card-body">
-                <p class="card-text">
-                    You can't access profiles without being authenticated!
-                </p>
-            </div>
+    <div class="card" v-else>
+        <div class="card-body">
+            <p class="card-text">
+                You can't access profiles without being authenticated!
+            </p>
         </div>
     </div>
     <LoadingSpinner :loading="loading"></LoadingSpinner>

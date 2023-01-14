@@ -1,6 +1,4 @@
 <script>
-import { watchPostEffect } from 'vue';
-
 export default {
     components: {},
     data: function () {
@@ -77,7 +75,7 @@ export default {
             <div v-if="!token">
                 <div class="mb-3">
                     <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" v-model="loginInfo.Username">
+                    <input type="text" class="form-control" id="username" v-model="loginInfo.Username" />
                 </div>
             </div>
 
@@ -87,7 +85,7 @@ export default {
                 </button>
             </div>
             <div v-else>
-                <button type="button" class="btn btn-sm btn-primary" @click=login>
+                <button type="button" class="btn btn-sm btn-primary" @click="login">
                     Login
                 </button>
             </div>

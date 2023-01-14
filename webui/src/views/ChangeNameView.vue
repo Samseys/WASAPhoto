@@ -19,16 +19,16 @@ export default {
             this.successmsg = null
             try {
                 if (this.Username.Username == "") {
-                    this.errormsg = "The username is empty."
+                    this.errormsg = "The username is empty.";
                 } else if (this.Username.Username == localStorage.username) {
-                    this.errormsg = "You already have this name."
+                    this.errormsg = "You already have this name.";
                 } else {
                     await this.$axios.put("/users/" + this.token + "/name", this.Username, {
                         headers: {
                             Authorization: 'Bearer ' + this.token
                         }
                     });
-                    this.successmsg = "Name changed successfully."
+                    this.successmsg = "Name changed successfully.";
                     localStorage.setItem("username", this.Username.Username)
                 }
             } catch (e) {
@@ -62,13 +62,12 @@ export default {
         <div v-if="!loading">
             <div class="mb-3">
                 <label for="username" class="form-label">New Name</label>
-                <input type="text" class="form-control" id="username" v-model="Username.Username">
+                <input type="text" class="form-control" id="username" v-model="Username.Username" />
             </div>
 
             <button type="button" class="btn btn-sm btn-primary" @click="changeName">
                 Change name
             </button>
-
         </div>
     </div>
     <div v-else>
@@ -81,7 +80,6 @@ export default {
         </div>
     </div>
     <LoadingSpinner :loading="loading"></LoadingSpinner>
-
 </template>
 
 <style>
