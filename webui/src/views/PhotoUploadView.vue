@@ -49,13 +49,6 @@ export default {
     },
     mounted() {
         this.token = localStorage.token;
-    },
-    watch: {
-        token(token) {
-            if (token) {
-                localStorage.token = token;
-            }
-        }
     }
 }
 </script>
@@ -74,8 +67,7 @@ export default {
             <div class="mb-3">
                 <label>
                     <label for="comment" class="form-label">Insert a comment to write with the photo</label>
-                    <textarea style="resize: none; width: 100%; height: 20vh; display: block;" class="form-control"
-                        id="comment" v-model="Image.MainComment"></textarea>
+                    <textarea class="form-control" id="comment" v-model="Image.MainComment"></textarea>
                     <br>
                     <input type="file" id="photo" name="photo" accept="image/png, image/jpeg" v-on:change="onChange" />
                 </label>
@@ -100,5 +92,10 @@ export default {
 </template>
 
 <style>
-
+textarea {
+    resize: none;
+    width: 100%;
+    height: 20vh;
+    display: block;
+}
 </style>

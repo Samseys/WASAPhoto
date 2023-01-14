@@ -39,7 +39,7 @@ func (rt *_router) UnbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 	}
 
 	if authID != userID {
-		w.WriteHeader(http.StatusForbidden)
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 

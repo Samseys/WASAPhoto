@@ -45,13 +45,6 @@ export default {
     },
     mounted() {
         this.token = localStorage.token;
-    },
-    watch: {
-        token(token) {
-            if (token) {
-                localStorage.token = token;
-            }
-        }
     }
 }
 </script>
