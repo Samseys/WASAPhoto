@@ -76,7 +76,7 @@ export default {
 							<li class="nav-item">
 								<RouterLink to="/" class="nav-link">
 									<svg class="feather">
-										<use href="/feather-sprite-v4.29.0.svg#rss" />
+										<use href="/feather-sprite-v4.29.0.svg#home" />
 									</svg>
 									Stream
 								</RouterLink>
@@ -107,7 +107,7 @@ export default {
 							<li class="nav-item">
 								<RouterLink to="/profile/me" class="nav-link">
 									<svg class="feather">
-										<use href="/feather-sprite-v4.29.0.svg#home" />
+										<use href="/feather-sprite-v4.29.0.svg#user" />
 									</svg>
 									My Profile
 								</RouterLink>

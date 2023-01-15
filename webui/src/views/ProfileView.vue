@@ -223,27 +223,23 @@ export default {
             class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
             <h1 class="h2">{{ this.header }}</h1>
             <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group me-2" v-if="this.token && !this.banned && this.profile.UserID != this.token">
+                    <button type="button" class="btn btn-sm btn-outline-primary" @click="unfollow"
+                        v-if="(this.profile.Followers ?? []).some(follower => follower.UserID == this.token)">
+                        Unfollow
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" @click="follow" v-else>
+                        Follow
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" @click="unban"
+                        v-if="(this.profile.BannedBy ?? []).some(bannedby => bannedby.UserID == this.token)">
+                        Unban
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" @click="ban" v-else>
+                        Ban
+                    </button>
+                </div>
                 <div class="btn-group me-2">
-                    <span v-if="this.token && !this.banned && this.profile.UserID != this.token">
-                        <span>
-                            <button type="button" class="btn btn-sm btn-outline-primary" @click="unfollow"
-                                v-if="(this.profile.Followers ?? []).some(follower => follower.UserID == this.token)">
-                                Unfollow
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-primary" @click="follow" v-else>
-                                Follow
-                            </button>
-                        </span>
-                        <span>
-                            <button type="button" class="btn btn-sm btn-outline-primary" @click="unban"
-                                v-if="(this.profile.BannedBy ?? []).some(bannedby => bannedby.UserID == this.token)">
-                                Unban
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-primary" @click="ban" v-else>
-                                Ban
-                            </button>
-                        </span>
-                    </span>
                     <button type="button" class="btn btn-sm btn-outline-primary" @click="refresh">
                         Refresh
                     </button>

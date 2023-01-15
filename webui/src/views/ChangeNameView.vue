@@ -81,6 +81,8 @@ export default {
     <LoadingSpinner :loading="loading"></LoadingSpinner>
 </template>
 
-<style>
-
+<style scoped>
+.card {
+	margin-bottom: 20px;
+}
 </style>
