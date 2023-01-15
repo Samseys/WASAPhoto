@@ -25,6 +25,12 @@ export default {
 				localStorage.removeItem("token");
 				localStorage.removeItem("username");
 			}
+		},
+
+		onLoginLogout() {
+			this.$nextTick(() => {
+				this.token = (localStorage.token ?? null);
+			});
 		}
 	},
 	async mounted() {
@@ -47,7 +53,12 @@ export default {
 			<div class="btn-group me-2">
 				<RouterLink to="/login" class="nav-link">
 					<button type="button" class="btn btn-sm btn-outline-primary">
-						Login/Logout
+						<span v-if="token">
+							Logout
+						</span>
+						<span v-else>
+							Login
+						</span>
 					</button>
 				</RouterLink>
 			</div>
@@ -65,17 +76,9 @@ export default {
 							<li class="nav-item">
 								<RouterLink to="/" class="nav-link">
 									<svg class="feather">
-										<use href="/feather-sprite-v4.29.0.svg#home" />
+										<use href="/feather-sprite-v4.29.0.svg#rss" />
 									</svg>
 									Stream
-								</RouterLink>
-							</li>
-							<li class="nav-item">
-								<RouterLink to="/profile/changename" class="nav-link">
-									<svg class="feather">
-										<use href="/feather-sprite-v4.29.0.svg#layout" />
-									</svg>
-									Change Name
 								</RouterLink>
 							</li>
 							<li class="nav-item">
@@ -86,26 +89,42 @@ export default {
 									Upload Photo
 								</RouterLink>
 							</li>
+							<li class="nav-item">
+								<RouterLink to="/search" class="nav-link">
+									<svg class="feather">
+										<use href="/feather-sprite-v4.29.0.svg#search" />
+									</svg>
+									Search by Username
+								</RouterLink>
+							</li>
 						</ul>
 
 						<h6
 							class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
-							<span>Secondary menu</span>
+							<span>Profile</span>
 						</h6>
 						<ul class="nav flex-column">
 							<li class="nav-item">
 								<RouterLink to="/profile/me" class="nav-link">
 									<svg class="feather">
-										<use href="/feather-sprite-v4.29.0.svg#file-text" />
+										<use href="/feather-sprite-v4.29.0.svg#home" />
 									</svg>
 									My Profile
+								</RouterLink>
+							</li>
+							<li class="nav-item">
+								<RouterLink to="/profile/changename" class="nav-link">
+									<svg class="feather">
+										<use href="/feather-sprite-v4.29.0.svg#settings" />
+									</svg>
+									Change Name
 								</RouterLink>
 							</li>
 						</ul>
 					</div>
 				</nav>
 				<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-					<RouterView />
+					<RouterView @on-login-logout="onLoginLogout()" />
 				</main>
 			</div>
 		</div>

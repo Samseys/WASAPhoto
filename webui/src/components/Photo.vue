@@ -228,7 +228,7 @@ export default {
                         <div class="card">
                             <div class="card-header">Post a comment</div>
                             <div class="card-body d-flex justify-content-between align-items-center">
-                                <textarea class="textarea" v-model="this.comment"></textarea>
+                                <textarea class="form-control" v-model="this.comment"></textarea>
 
                                 <button type="button" class="btn btn-primary" @click="postComment()">
                                     Comment

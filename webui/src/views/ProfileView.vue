@@ -279,8 +279,15 @@ export default {
                         </p>
                     </div>
                 </div>
-                <Photo :photo=photo v-for="photo in (this.profile.Photos ?? [])" :key="photo.PhotoID"
-                    @delete-photo="deletePhoto(photo)"></Photo>
+                <div v-if=this.profile.Photos>
+                    <Photo :photo=photo v-for="photo in this.profile.Photos" :key="photo.PhotoID"
+                        @delete-photo="deletePhoto(photo)"></Photo>
+                </div>
+                <div class="card" v-else>
+                    <div class="card-body">
+                        <p class="card-text">This user hasn't uploaded any photo yet.</p>
+                    </div>
+                </div>
             </div>
 
         </div>

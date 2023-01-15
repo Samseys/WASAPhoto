@@ -1,6 +1,5 @@
 <script>
 export default {
-    components: {},
     data: function () {
         return {
             errormsg: null,
@@ -12,6 +11,7 @@ export default {
             token: null
         }
     },
+    emits: ["on-login-logout"],
     methods: {
         async login() {
             this.loading = true;
@@ -23,6 +23,7 @@ export default {
                     this.token = response.data.UserID;
                     localStorage.setItem("username", this.loginInfo.Username);
                     this.successmsg = "Logged in with User ID " + this.token;
+                    this.$emit("on-login-logout");
                 } else {
                     this.errormsg = "The username is empty."
                 }
@@ -43,6 +44,7 @@ export default {
             localStorage.removeItem("username");
             this.loginInfo.Username = ""
             this.successmsg = "Logged out successfully.";
+            this.$emit("on-login-logout");
             this.loading = false;
         }
     },
