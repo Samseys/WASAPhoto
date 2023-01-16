@@ -13,11 +13,7 @@ func (db *appdbimpl) GetStream(userID uint64) (Stream, error) {
 		if err != nil {
 			return stream, err
 		}
-		photo, err := db.GetPhotoInfoForFrontend(photoID)
-		if err != nil {
-			return stream, err
-		}
-		stream.Photos = append(stream.Photos, photo)
+		stream.Photos = append(stream.Photos, photoID)
 	}
 
 	if err = rows.Err(); err != nil {

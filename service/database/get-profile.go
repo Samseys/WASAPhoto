@@ -103,16 +103,12 @@ func (db *appdbimpl) GetUserProfile(userID uint64) (UserProfile, error) {
 	}
 
 	for rows.Next() {
-		var photoid uint64
-		err = rows.Scan(&photoid)
+		var photoID uint64
+		err = rows.Scan(&photoID)
 		if err != nil {
 			return userProfile, err
 		}
-		photo, err := db.GetPhotoInfoForFrontend(photoid)
-		if err != nil {
-			return userProfile, err
-		}
-		userProfile.Photos = append(userProfile.Photos, photo)
+		userProfile.Photos = append(userProfile.Photos, photoID)
 	}
 
 	if err = rows.Err(); err != nil {

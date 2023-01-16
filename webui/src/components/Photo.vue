@@ -1,32 +1,32 @@
 <script>
 export default {
     props: {
-        "photo": {
-            PhotoID: Number,
-            Owner: {
-                UserID: Number,
-                Username: String
-            },
-            CreationDate: String,
-            Comment: String,
-            Comments: [{
-                CommentID: Number,
-                Comment: String,
+        photoID: Number
+    },
+    data: function data() {
+        return {
+            photo: {
+                PhotoID: Number,
                 Owner: {
                     UserID: Number,
                     Username: String
                 },
-                CreationDate: String
-            }],
-            Likes: [{
-                UserID: Number,
-                Username: String
-            }]
-        }
-    },
-    emits: ["delete-photo"],
-    data: function data() {
-        return {
+                CreationDate: String,
+                Comment: String,
+                Comments: [{
+                    CommentID: Number,
+                    Comment: String,
+                    Owner: {
+                        UserID: Number,
+                        Username: String
+                    },
+                    CreationDate: String
+                }],
+                Likes: [{
+                    UserID: Number,
+                    Username: String
+                }]
+            },
             errormsg: null,
             comment: "",
             token: null,
@@ -37,18 +37,24 @@ export default {
     methods: {
         async getImage() {
             this.loading = true;
-            let response = await this.$axios.get("/photos/" + this.photo.PhotoID + "/file", {
+            let response = await this.$axios.get("/photos/" + this.photoID + "", {
+                headers: {
+                    Authorization: 'Bearer ' + this.token
+                }
+            });
+            this.photo = response.data;
+
+            response = await this.$axios.get("/photos/" + this.photoID + "/file", {
                 headers: {
                     Authorization: 'Bearer ' + this.token
                 }, responseType: 'blob'
             });
-
             this.photoFile = window.URL.createObjectURL(response.data);
             this.loading = false;
         },
         async deletePhoto() {
             try {
-                await this.$axios.delete("/photos/" + this.photo.PhotoID, {
+                await this.$axios.delete("/photos/" + this.photoID, {
                     headers: {
                         Authorization: 'Bearer ' + this.token
                     }
@@ -69,7 +75,7 @@ export default {
         async like() {
             this.errormsg = ""
             try {
-                await this.$axios.put("/photos/" + this.photo.PhotoID + "/likes/" + this.token, "", {
+                await this.$axios.put("/photos/" + this.photoID + "/likes/" + this.token, "", {
                     headers: {
                         Authorization: 'Bearer ' + this.token
                     }
@@ -93,7 +99,7 @@ export default {
         async unlike() {
             this.errormsg = ""
             try {
-                await this.$axios.delete("/photos/" + this.photo.PhotoID + "/likes/" + this.token, {
+                await this.$axios.delete("/photos/" + this.photoID + "/likes/" + this.token, {
                     headers: {
                         Authorization: 'Bearer ' + this.token
                     }
@@ -103,7 +109,7 @@ export default {
                 if (e.response && e.response.status == '403') {
                     this.errormsg = "The owner of this profile banned you.";
                 } if (e.response && e.response.status == '404') {
-                    this.errormsg = "There is no photo with this id: " + this.photo.PhotoID + ".";
+                    this.errormsg = "There is no photo with this id: " + this.photoID + ".";
                 } else if (e.response && e.response.status == '500') {
                     this.errormsg = "An internal error has occured.";
                 } else {
@@ -117,7 +123,7 @@ export default {
                 this.errormsg = "You can't post an empty comment";
             }
             try {
-                var response = await this.$axios.post("/photos/" + this.photo.PhotoID + "/comments", { Comment: this.comment }, {
+                let response = await this.$axios.post("/photos/" + this.photoID + "/comments", { Comment: this.comment }, {
                     headers: {
                         Authorization: 'Bearer ' + this.token
                     }
@@ -131,7 +137,7 @@ export default {
                 if (e.response && e.response.status == '403') {
                     this.errormsg = "The owner of this profile banned you.";
                 } if (e.response && e.response.status == '404') {
-                    this.errormsg = "There is no photo with this id: " + this.photo.PhotoID + ".";
+                    this.errormsg = "There is no photo with this id: " + this.photoID + ".";
                 } else if (e.response && e.response.status == '500') {
                     this.errormsg = "An internal error has occured.";
                 } else {
@@ -141,7 +147,7 @@ export default {
         },
         async deleteComment(c) {
             try {
-                await this.$axios.delete("/photos/" + this.photo.PhotoID + "/comments/" + c.CommentID, {
+                await this.$axios.delete("/photos/" + this.photoID + "/comments/" + c.CommentID, {
                     headers: {
                         Authorization: 'Bearer ' + this.token
                     }

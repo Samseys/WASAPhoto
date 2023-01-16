@@ -38,13 +38,13 @@ type PhotoForFrontend struct {
 }
 
 type Stream struct {
-	Photos []PhotoForFrontend `json:"Photos"`
+	Photos []uint64 `json:"Photos"`
 }
 
 type UserProfile struct {
 	ID        uint64                  `json:"UserID"`
 	Username  string                  `json:"Username"`
-	Photos    []PhotoForFrontend      `json:"Photos"`
+	Photos    []uint64                `json:"Photos"`
 	Followers []UserProfileSimplified `json:"Followers"`
 	Following []UserProfileSimplified `json:"Following"`
 	Banned    []UserProfileSimplified `json:"Banned"`

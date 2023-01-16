@@ -49,40 +49,42 @@ export default {
 </script>
 
 <template>
-    <div
-        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Change Name</h1>
-    </div>
-
-    <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
-    <SuccessMsg v-if="successmsg" :msg="successmsg"></SuccessMsg>
-
-    <div v-if="token">
-        <div v-if="!loading">
-            <div class="mb-3">
-                <label for="username" class="form-label">New Name</label>
-                <input type="text" class="form-control" id="username" v-model="Username.Username" />
-            </div>
-
-            <button type="button" class="btn btn-sm btn-primary" @click="changeName">
-                Change name
-            </button>
+    <div>
+        <div
+            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">Change Name</h1>
         </div>
-    </div>
-    <div v-else>
-        <div class="card">
-            <div class="card-body">
-                <p class="card-text">
-                    You can't change name without being authenticated!
-                </p>
+
+        <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
+        <SuccessMsg v-if="successmsg" :msg="successmsg"></SuccessMsg>
+
+        <div v-if="token">
+            <div v-if="!loading">
+                <div class="mb-3">
+                    <label for="username" class="form-label">New Name</label>
+                    <input type="text" class="form-control" id="username" v-model="Username.Username" />
+                </div>
+
+                <button type="button" class="btn btn-sm btn-primary" @click="changeName">
+                    Change name
+                </button>
             </div>
         </div>
+        <div v-else>
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-text">
+                        You can't change name without being authenticated!
+                    </p>
+                </div>
+            </div>
+        </div>
+        <LoadingSpinner :loading="loading"></LoadingSpinner>
     </div>
-    <LoadingSpinner :loading="loading"></LoadingSpinner>
 </template>
 
 <style scoped>
 .card {
-	margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 </style>
