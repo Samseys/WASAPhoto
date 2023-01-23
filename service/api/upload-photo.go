@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 
 	"github.com/julienschmidt/httprouter"
@@ -40,7 +41,12 @@ func (rt *_router) UploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
+	var whitespaces = regexp.MustCompile(`\s+`)
+
 	mainComment := r.FormValue("MainComment")
+	if whitespaces.ReplaceAllString(mainComment, "") == "" {
+		mainComment = ""
+	}
 
 	file, fileheader, err := r.FormFile("UploadedPhoto")
 	if err != nil {

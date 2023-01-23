@@ -119,8 +119,9 @@ export default {
         },
         async postComment() {
             this.errormsg = ""
-            if (this.comment == null || this.comment == "") {
+            if (this.comment == null || this.comment.replace(/\s+/g, "") == "") {
                 this.errormsg = "You can't post an empty comment";
+                return;
             }
             try {
                 let response = await this.$axios.post("/photos/" + this.photoID + "/comments", { Comment: this.comment }, {
@@ -190,7 +191,7 @@ export default {
                 </button>
             </div>
             <div class="card-body">
-                <p class="card-text" v-if="this.photo.Comment">
+                <p class="card-text" style="white-space:pre-line" v-if="this.photo.Comment">
                     {{ this.photo.Comment }}
                     <br />
                 </p>
@@ -228,7 +229,9 @@ export default {
                                 </button>
                             </div>
                             <div class="card-body">
-                                {{ c.Comment }}
+                                <p class="card-text" style="white-space:pre-line">
+                                    {{ c.Comment }}
+                                </p>
                             </div>
                         </div>
                         <div class="card">

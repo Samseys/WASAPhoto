@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"regexp"
 	"strconv"
 
 	"github.com/julienschmidt/httprouter"
@@ -71,6 +72,12 @@ func (rt *_router) CommentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		ctx.Logger.WithError(err).Error("comment-photo: error decoding the JSON")
 		w.WriteHeader(http.StatusBadRequest)
 		return
+	}
+
+	var whitespaces = regexp.MustCompile(`\s+`)
+
+	if whitespaces.ReplaceAllString(comment.Comment, "") == "" {
+		comment.Comment = ""
 	}
 
 	if comment.Comment == "" {
