@@ -22,11 +22,7 @@ export default {
                 } else if (this.Username.Username == localStorage.username) {
                     this.errormsg = "You already have this name.";
                 } else {
-                    await this.$axios.put("/users/" + this.token + "/name", this.Username, {
-                        headers: {
-                            Authorization: 'Bearer ' + this.token
-                        }
-                    });
+                    await this.$axios.put("/users/" + this.token + "/name", this.Username);
                     this.successmsg = "Name changed successfully.";
                     localStorage.setItem("username", this.Username.Username)
                 }

@@ -11,6 +11,16 @@ import './assets/main.css'
 
 const app = createApp(App);
 app.config.globalProperties.$axios = axios;
+axios.interceptors.request.use(
+    config => {
+        if (localStorage.token) {
+            config.headers['Authorization'] = "Bearer " + localStorage.token;
+        }
+        return config;
+    },
+    error => {
+        Promise.reject(error)
+});
 app.component("ErrorMsg", ErrorMsg);
 app.component("LoadingSpinner", LoadingSpinner);
 app.component("SuccessMsg", SuccessMsg);

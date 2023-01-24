@@ -22,11 +22,7 @@ export default {
 			this.loading = true;
 			this.errormsg = null;
 			try {
-				let response = await this.$axios.get("/stream", {
-					headers: {
-						Authorization: 'Bearer ' + this.token
-					}
-				});
+				let response = await this.$axios.get("/stream");
 				this.photos = response.data.Photos;
 			} catch (e) {
 				if (e.response && e.response.status == '500') {

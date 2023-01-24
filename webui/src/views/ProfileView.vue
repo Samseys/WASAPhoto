@@ -63,11 +63,7 @@ export default {
                 if (!this.profileID) {
                     this.errormsg = "The profile ID is empty"
                 } else {
-                    let response = await this.$axios.get("/users/" + this.profileID + "/profile", {
-                        headers: {
-                            Authorization: 'Bearer ' + this.token
-                        }
-                    });
+                    let response = await this.$axios.get("/users/" + this.profileID + "/profile");
                     this.profile = response.data;
                     this.header = this.profile.Username;
                     this.found = true;
@@ -89,11 +85,7 @@ export default {
         async follow() {
             this.errormsg = ""
             try {
-                await this.$axios.put("/users/" + this.token + "/followed/" + this.profile.UserID, "", {
-                    headers: {
-                        Authorization: 'Bearer ' + this.token
-                    }
-                });
+                await this.$axios.put("/users/" + this.token + "/followed/" + this.profile.UserID, "");
                 if (!this.profile.Followers) {
                     this.profile.Followers = [];
                 }
@@ -112,11 +104,7 @@ export default {
         async unfollow() {
             this.errormsg = ""
             try {
-                await this.$axios.delete("/users/" + this.token + "/followed/" + this.profile.UserID, {
-                    headers: {
-                        Authorization: 'Bearer ' + this.token
-                    }
-                });
+                await this.$axios.delete("/users/" + this.token + "/followed/" + this.profile.UserID);
                 this.profile.Followers.splice(this.profile.Followers.findIndex(item => item.UserID == this.token), 1)
             } catch (e) {
                 if (e.response && e.response.status == '404') {
@@ -131,11 +119,7 @@ export default {
         async ban() {
             this.errormsg = ""
             try {
-                await this.$axios.put("/users/" + this.token + "/banned/" + this.profile.UserID, "", {
-                    headers: {
-                        Authorization: 'Bearer ' + this.token
-                    }
-                });
+                await this.$axios.put("/users/" + this.token + "/banned/" + this.profile.UserID, "");
 
                 if (!this.profile.BannedBy) {
                     this.profile.BannedBy = [];
@@ -155,11 +139,7 @@ export default {
         async unban() {
             this.errormsg = ""
             try {
-                await this.$axios.delete("/users/" + this.token + "/banned/" + this.profile.UserID, {
-                    headers: {
-                        Authorization: 'Bearer ' + this.token
-                    }
-                });
+                await this.$axios.delete("/users/" + this.token + "/banned/" + this.profile.UserID);
                 this.profile.BannedBy.splice(this.profile.BannedBy.findIndex(item => item.UserID == this.token), 1)
             } catch (e) {
                 if (e.response && e.response.status == '404') {

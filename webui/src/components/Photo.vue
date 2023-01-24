@@ -37,28 +37,16 @@ export default {
     methods: {
         async getImage() {
             this.loading = true;
-            let response = await this.$axios.get("/photos/" + this.photoID + "", {
-                headers: {
-                    Authorization: 'Bearer ' + this.token
-                }
-            });
+            let response = await this.$axios.get("/photos/" + this.photoID + "");
             this.photo = response.data;
 
-            response = await this.$axios.get("/photos/" + this.photoID + "/file", {
-                headers: {
-                    Authorization: 'Bearer ' + this.token
-                }, responseType: 'blob'
-            });
+            response = await this.$axios.get("/photos/" + this.photoID + "/file", { responseType: 'blob' });
             this.photoFile = window.URL.createObjectURL(response.data);
             this.loading = false;
         },
         async deletePhoto() {
             try {
-                await this.$axios.delete("/photos/" + this.photoID, {
-                    headers: {
-                        Authorization: 'Bearer ' + this.token
-                    }
-                });
+                await this.$axios.delete("/photos/" + this.photoID);
                 this.$emit("delete-photo");
             } catch (e) {
                 if (e.response && e.response.status == '403') {
@@ -75,11 +63,7 @@ export default {
         async like() {
             this.errormsg = ""
             try {
-                await this.$axios.put("/photos/" + this.photoID + "/likes/" + this.token, "", {
-                    headers: {
-                        Authorization: 'Bearer ' + this.token
-                    }
-                });
+                await this.$axios.put("/photos/" + this.photoID + "/likes/" + this.token, "");
                 if (this.photo.Likes == null) {
                     this.photo.Likes = []
                 }
@@ -99,11 +83,7 @@ export default {
         async unlike() {
             this.errormsg = ""
             try {
-                await this.$axios.delete("/photos/" + this.photoID + "/likes/" + this.token, {
-                    headers: {
-                        Authorization: 'Bearer ' + this.token
-                    }
-                });
+                await this.$axios.delete("/photos/" + this.photoID + "/likes/" + this.token);
                 this.photo.Likes.splice(this.photo.Likes.findIndex(item => item.UserID == this.token), 1)
             } catch (e) {
                 if (e.response && e.response.status == '403') {
@@ -124,11 +104,7 @@ export default {
                 return;
             }
             try {
-                let response = await this.$axios.post("/photos/" + this.photoID + "/comments", { Comment: this.comment }, {
-                    headers: {
-                        Authorization: 'Bearer ' + this.token
-                    }
-                });
+                let response = await this.$axios.post("/photos/" + this.photoID + "/comments", { Comment: this.comment });
                 if (this.photo.Comments == null) {
                     this.photo.Comments = []
                 }
@@ -148,11 +124,7 @@ export default {
         },
         async deleteComment(c) {
             try {
-                await this.$axios.delete("/photos/" + this.photoID + "/comments/" + c.CommentID, {
-                    headers: {
-                        Authorization: 'Bearer ' + this.token
-                    }
-                });
+                await this.$axios.delete("/photos/" + this.photoID + "/comments/" + c.CommentID);
                 this.photo.Comments.splice(this.photo.Comments.findIndex(item => item.CommentID == c.CommentID), 1)
             } catch (e) {
                 if (e.response && e.response.status == '403') {
