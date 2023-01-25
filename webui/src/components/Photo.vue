@@ -185,7 +185,7 @@ export default {
                 </div>
                 <br />
                 <div class="card">
-                    <div class="card-header">Comment Section</div>
+                    <div class="card-header">Comments: {{ (this.photo.Comments ?? []).length}}</div>
                     <div class="card-body">
                         <div class="card" v-for="c in this.photo.Comments" :key="c.CommentID">
                             <div class="card-header d-flex justify-content-between align-items-center">
